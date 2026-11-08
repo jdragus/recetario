@@ -65,7 +65,7 @@ jobs:
               <uses-permission android:name="android.permission.CAMERA"/>
               <uses-feature android:name="android.hardware.camera" android:required="false"/>
               <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
-              <application android:label="Recetario" android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme" android:allowBackup="true">
+              <application android:label="Prepárate" android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme" android:allowBackup="true">
                   <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="portrait" android:configChanges="orientation|screenSize|keyboardHidden">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN"/>
@@ -168,7 +168,7 @@ jobs:
           EOF
 
       - name: Construir
-        run: gradle -p android assembleDebug --no-daemon
+        run: mkdir -p ~/.android && cp debug.keystore ~/.android/ && gradle -p android assembleDebug --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
