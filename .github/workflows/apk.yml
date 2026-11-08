@@ -8,8 +8,62 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Preparar la Biblia (solo la primera vez)
+        run: |
+          if [ -f biblia.json ]; then echo "La Biblia ya existe"; exit 0; fi
+          curl -L --fail -o vpl.zip https://ebible.org/Scriptures/spaRV1909_vpl.zip
+          mkdir -p vpl && unzip -o -q vpl.zip -d vpl
+          cat > convertir.py <<'EOF'
+          import re, glob, json
+          CODES = ("GEN EXO LEV NUM DEU JOS JDG RUT 1SA 2SA 1KI 2KI 1CH 2CH EZR NEH EST JOB PSA PRO ECC SNG ISA JER LAM EZK DAN HOS JOL AMO OBA JON MIC NAM HAB ZEP HAG ZEC MAL "
+                   "MAT MRK LUK JHN ACT ROM 1CO 2CO GAL EPH PHP COL 1TH 2TH 1TI 2TI TIT PHM HEB JAS 1PE 2PE 1JN 2JN 3JN JUD REV").split()
+          rx = re.compile(r'^(\S{2,5}) (\d+):(\d+)\s+(.*)$')
+          data, order = {}, []
+          for f in sorted(glob.glob('vpl/**/*.txt', recursive=True)):
+              for line in open(f, encoding='utf-8-sig', errors='replace'):
+                  m = rx.match(line.strip())
+                  if not m:
+                      continue
+                  b, c, v, t = m.group(1), int(m.group(2)), int(m.group(3)), m.group(4).replace('\u00b6', '').strip()
+                  if c < 1 or v < 1 or not t:
+                      continue
+                  if b not in data:
+                      data[b] = {}
+                      order.append(b)
+                  data[b].setdefault(c, {})[v] = t
+          if all(b.upper() in CODES for b in order):
+              ids = {b: b.upper() for b in order}
+          elif len(order) == 66:
+              ids = dict(zip(order, CODES))
+          else:
+              ids = {b: b.upper() for b in order if b.upper() in CODES}
+          books = []
+          for b in order:
+              if b not in ids:
+                  continue
+              chs = data[b]
+              arr = []
+              for c in range(1, max(chs) + 1):
+                  vs = chs.get(c, {})
+                  arr.append([vs.get(v, '') for v in range(1, (max(vs) if vs else 0) + 1)])
+              books.append({'id': ids[b], 'c': arr})
+          print('Libros encontrados:', len(books))
+          if len(books) < 60:
+              raise SystemExit('No se pudo leer la Biblia del archivo descargado')
+          json.dump({'v': 'RV1909', 'b': books}, open('biblia.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+          EOF
+          python3 convertir.py
+          rm -rf vpl vpl.zip convertir.py
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add biblia.json
+          git commit -m "Agregar Biblia Reina-Valera 1909"
+          git push || echo "No se pudo guardar biblia.json en el repositorio"
 
       - uses: actions/setup-java@v4
         with:
@@ -25,6 +79,7 @@ jobs:
           P=android/app/src/main
           mkdir -p $P/java/io/github/jdragus/recetario $P/assets $P/res/mipmap-xxxhdpi $P/res/values
           cp index.html manifest.webmanifest icon-192.png icon-512.png $P/assets/
+          if [ -f biblia.json ]; then cp biblia.json $P/assets/; fi
           cp icon-192.png $P/res/mipmap-xxxhdpi/ic_launcher.png
 
           cat > android/settings.gradle <<'EOF'
