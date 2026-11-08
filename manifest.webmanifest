@@ -1,6 +1,6 @@
 {
-  "name": "Recetario de emergencia",
-  "short_name": "Recetario",
+  "name": "Prepárate para la emergencia",
+  "short_name": "Prepárate",
   "description": "Guías de emergencia que funcionan sin internet. Mantente seguro.",
   "lang": "es-MX",
   "start_url": "./",

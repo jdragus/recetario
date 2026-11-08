@@ -1,6 +1,6 @@
 /* Recetario de emergencia: guarda la app en el teléfono para usarla sin internet.
    Cuando cambies el contenido, sube el número de versión para que los teléfonos se actualicen. */
-const CACHE = 'recetario-v1';
+const CACHE = 'recetario-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
