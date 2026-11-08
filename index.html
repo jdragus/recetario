@@ -157,6 +157,21 @@ ul.bul li{padding:4px 0}
 .ckl li.xi{display:flex;align-items:flex-start;gap:8px}
 .ckl li.xi label{flex:1}
 
+/* Biblia */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.bbtn{display:flex;align-items:center;min-height:48px;padding:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-decoration:none;font-weight:700;font-size:16px;line-height:1.2}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}
+.cbtn{display:grid;place-items:center;height:52px;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-decoration:none;font-weight:700;font-size:18px}
+.rhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rhead h1{margin:4px 0 10px}
+.fsz{display:flex;gap:6px;flex:none}
+.fsz button{width:46px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700;cursor:pointer}
+.btext{font-family:Georgia,"Times New Roman",serif;line-height:1.7;margin-bottom:18px}
+.btext sup{font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:.6em;font-weight:700;color:var(--muted);margin-right:3px}
+.vs.hl{background:var(--note);box-shadow:0 0 0 3px var(--note);border-radius:4px}
+.bnav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bnav .big{margin:0;text-align:center;text-decoration:none;font-size:18px;padding:16px}
+
 /* Pantalla de inicio */
 .splash{position:fixed;inset:0;z-index:20;background:var(--accent);color:var(--accent-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;transition:opacity .35s}
 .splash .logo{width:120px;height:120px}
@@ -194,7 +209,7 @@ ul.bul li{padding:4px 0}
 const SECS = [
   {code:'A', name:'Agua', desc:'Hervir, cloro, filtro y destilador', rule:'Filtrar quita la tierra; desinfectar quita los microbios.', start:'a0', fichas:['A1','A2','A3','A4','A5','A6']},
   {code:'H', name:'Huracanes e inundaciones', desc:'Antes, durante y después', rule:'Si Protección Civil pide evacuar, sal sin esperar.', start:'h1', fichas:['H1','H2','H3','H4']},
-  {code:'N', name:'Sismos y otros riesgos', desc:'Sismos, frío, volcanes e incendios', rule:'Practica en los simulacros: en un sismo no hay tiempo de pensar.', start:'n1', fichas:['N1','N2','N3','N4','N5','N6']},
+  {code:'N', name:'Sismos y otros riesgos', desc:'Sismos, frío, volcanes, incendios y nuclear', rule:'Practica en los simulacros: en un sismo no hay tiempo de pensar.', start:'n1', fichas:['N1','N2','N3','N4','N5','N6','N7','N8']},
   {code:'E', name:'Energía', desc:'Solar, baterías, cables y luz', rule:'La energía se guarda en baterías y se gasta en lo esencial.', start:'e1', fichas:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10']},
   {code:'F', name:'Fuego y cocina', desc:'Estufas caseras y cómo encender', rule:'Cocina siempre al aire libre o con buena ventilación.', start:'c1', fichas:['F1','F2','F3','F4']},
   {code:'P', name:'Primeros auxilios', desc:'RCP, sangrado, quemaduras y calor', rule:'Primero tu seguridad, luego la del herido. Con señal, llama al 911.', start:'p1', fichas:['P1','P2','P3','P4','P5','P6']},
@@ -538,6 +553,34 @@ const F = {
     ['step','Si dejas tu casa, cierra ventanas y corta el gas.'],
     ['lab','Para evitarlos','No quemes basura ni pasto, apaga bien las fogatas con agua y tierra, y no tires colillas.'],
     ['note','Nunca intentes apagar tú solo un incendio grande.']]},
+  N7:{t:'Explosión o emergencia nuclear', b:[
+    ['lab','La regla','**Entra, quédate adentro y escucha la radio.** La radiación de la lluvia radiactiva baja mucho en las primeras horas.'],
+    ['h','Si ves un destello muy fuerte'],
+    ['step','No lo mires. Tírate al suelo boca abajo, detrás de algo sólido si puedes, y cubre cabeza, cara y manos.'],
+    ['step','Quédate abajo hasta que pase la onda expansiva; puede tardar varios segundos en llegar.'],
+    ['step','Si vas manejando, detente con cuidado y agáchate dentro del carro.'],
+    ['h','Después, en los primeros minutos'],
+    ['step','Entra al edificio más cercano, mejor si es de ladrillo o concreto. El carro no protege.'],
+    ['step','Ve al sótano o al centro del edificio, lejos de ventanas, techo y muros exteriores.'],
+    ['step','Antes de entrar, quítate la ropa de encima y límpiate (ficha N8).'],
+    ['step','Cierra puertas y ventanas, y apaga ventiladores y aires que tomen aire de afuera.'],
+    ['step','Quédate adentro **al menos 24 horas**, salvo que las autoridades digan otra cosa o haya fuego, fuga de gas o derrumbe.'],
+    ['step','Si tu familia está en otro lugar, que se queden ahí. Se reúnen después; salir a buscarlos los expone a todos.'],
+    ['step','Mete a tus mascotas.'],
+    ['li','**Agua:** hervirla no quita la radiación. Toma agua embotellada o la que ya tenías guardada y tapada.'],
+    ['li','**Comida:** la que estaba en latas, frascos o empaques cerrados se puede comer; limpia el envase antes de abrirlo.'],
+    ['li','**Yoduro de potasio:** tómalo solo si las autoridades lo indican. No protege de toda la radiación.'],
+    ['note','En México la única planta nuclear es Laguna Verde, en Veracruz. Si vives cerca, conoce el plan de emergencia de Protección Civil para tu zona.']]},
+  N8:{t:'Limpiarse de polvo radiactivo', b:[
+    ['p','Si estuviste afuera después de la explosión, el polvo radiactivo se pega a la ropa y al cuerpo. Limpiarse baja mucho el peligro.'],
+    ['step','Quítate la capa de ropa de encima y los zapatos con cuidado, sin sacudirlos. Solo eso quita hasta el **90 %** del material radiactivo.'],
+    ['step','Mete esa ropa en una bolsa de plástico cerrada y déjala lejos de personas y mascotas.'],
+    ['step','Báñate con agua tibia y jabón. Lávate el cabello con champú o jabón, **sin acondicionador**: hace que el material se pegue al pelo.'],
+    ['step','No talles fuerte ni te raspes la piel. Tapa cortadas y raspones.'],
+    ['step','Si no hay regadera, limpia con trapo húmedo o toallitas la cara, las manos y el cabello. Suénate y limpia párpados, pestañas y orejas.'],
+    ['step','Ponte ropa limpia que estaba guardada.'],
+    ['step','Lava a tus mascotas con agua y jabón, usando guantes y tapándote nariz y boca.'],
+    ['note','Si no tienes ropa limpia, sacude con cuidado la que traes, afuera y con nariz y boca tapadas, antes de volver a ponértela.']]},
 
   M1:{t:'Mapas de México sin internet', b:[
     ['p','Usa Organic Maps: es gratis, sin anuncios, y funciona sin internet una vez que bajas el mapa.'],
@@ -591,7 +634,7 @@ const N = {
   s1:{text:'¿Dónde estás?', o:[['En casa','s2'],['Voy a salir','f:S3'],['Me están agrediendo','f:S4']]},
   s2:{text:'¿Qué quieres hacer?', o:[['Asegurar la casa','f:S1'],['Organizarme con vecinos','f:S2']]},
   m1:{text:'¿Qué necesitas?', o:[['Mapas sin internet','f:M1'],['Mi punto de reunión','f:M2'],['Teléfonos de emergencia','f:M3']]},
-  n1:{text:'¿Qué está pasando?', o:[['Está temblando o sonó la alerta','f:N1'],['Ya pasó el temblor','f:N2'],['Hace mucho frío','f:N4'],['Cae ceniza o hay alerta volcánica','f:N5'],['Fuego o humo en el monte','f:N6']]},
+  n1:{text:'¿Qué está pasando?', o:[['Está temblando o sonó la alerta','f:N1'],['Ya pasó el temblor','f:N2'],['Hace mucho frío','f:N4'],['Cae ceniza o hay alerta volcánica','f:N5'],['Fuego o humo en el monte','f:N6'],['Explosión o alerta nuclear','f:N7']]},
   h1:{text:'¿Ya llegó el huracán?', o:[['No, viene en camino','f:H1'],['Sí, está pasando','h2'],['Ya pasó','f:H4']]},
   h2:{text:'¿Está entrando agua o subiendo en la calle?', o:[['Sí','f:H3'],['No','f:H2']]}
 };
@@ -776,7 +819,9 @@ function homeResults(){
     res.innerHTML = `<div class="list" style="margin-bottom:12px"><a class="row" href="#plan"><span class="tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="7" r="3.2"/><circle cx="16.5" cy="8" r="2.6"/><path d="M2 20c0-3.6 2.7-6 6-6s6 2.4 6 6z"/><path d="M13.5 20c.2-2 .9-3.6 2.1-4.6.3 0 .6-.1.9-.1 2.9 0 5.5 2 5.5 4.7z"/></svg></span>
         <span class="rt"><span class="rn">Mi plan familiar</span><span class="rd">Punto de reunión, contactos y datos médicos</span></span>${CHEV}</a>
         <a class="row" href="#mochila"><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M8 7V5a4 4 0 0 1 8 0v2"/><rect x="4" y="7" width="16" height="14" rx="3"/><path d="M8 13h8"/></svg></span>
-        <span class="rt"><span class="rn">Mi mochila</span><span class="rd">Lista para marcar y revisar cada 6 meses</span></span>${CHEV}</a></div>
+        <span class="rt"><span class="rn">Mi mochila</span><span class="rd">Lista para marcar y revisar cada 6 meses</span></span>${CHEV}</a>
+        <a class="row" href="#biblia"><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M12 7v5M9.5 9h5"/></svg></span>
+        <span class="rt"><span class="rn">Biblia</span><span class="rd">Reina-Valera 1909, con buscador</span></span>${CHEV}</a></div>
       <div class="list">${SECS.map(s => `
       <a class="row" href="#sec-${s.code.toLowerCase()}"><span class="tile">${s.code}</span>
         <span class="rt"><span class="rn">${s.name}</span><span class="rd">${s.desc}</span></span>${CHEV}</a>`).join('')}</div>
@@ -955,6 +1000,104 @@ function mochilaView(){
   count(); drawRev();
 }
 
+/* Biblia */
+const BOOKS = [['GEN','Génesis'],['EXO','Éxodo'],['LEV','Levítico'],['NUM','Números'],['DEU','Deuteronomio'],['JOS','Josué'],['JDG','Jueces'],['RUT','Rut'],['1SA','1 Samuel'],['2SA','2 Samuel'],['1KI','1 Reyes'],['2KI','2 Reyes'],['1CH','1 Crónicas'],['2CH','2 Crónicas'],['EZR','Esdras'],['NEH','Nehemías'],['EST','Ester'],['JOB','Job'],['PSA','Salmos'],['PRO','Proverbios'],['ECC','Eclesiastés'],['SNG','Cantares'],['ISA','Isaías'],['JER','Jeremías'],['LAM','Lamentaciones'],['EZK','Ezequiel'],['DAN','Daniel'],['HOS','Oseas'],['JOL','Joel'],['AMO','Amós'],['OBA','Abdías'],['JON','Jonás'],['MIC','Miqueas'],['NAM','Nahúm'],['HAB','Habacuc'],['ZEP','Sofonías'],['HAG','Hageo'],['ZEC','Zacarías'],['MAL','Malaquías'],['MAT','Mateo'],['MRK','Marcos'],['LUK','Lucas'],['JHN','Juan'],['ACT','Hechos'],['ROM','Romanos'],['1CO','1 Corintios'],['2CO','2 Corintios'],['GAL','Gálatas'],['EPH','Efesios'],['PHP','Filipenses'],['COL','Colosenses'],['1TH','1 Tesalonicenses'],['2TH','2 Tesalonicenses'],['1TI','1 Timoteo'],['2TI','2 Timoteo'],['TIT','Tito'],['PHM','Filemón'],['HEB','Hebreos'],['JAS','Santiago'],['1PE','1 Pedro'],['2PE','2 Pedro'],['1JN','1 Juan'],['2JN','2 Juan'],['3JN','3 Juan'],['JUD','Judas'],['REV','Apocalipsis']];
+const bookName = id => (BOOKS.find(b => b[0] === id) || [id, id])[1];
+let BIBLE = null, bibleLoading = null, BIDX = null, bTimer = null;
+let BS = loadStore('biblia-v1', {fs:20, last:''});
+
+function loadBible(){
+  if(BIBLE) return Promise.resolve(BIBLE);
+  if(!bibleLoading){
+    bibleLoading = fetch('biblia.json')
+      .then(r => { if(!r.ok) throw new Error('sin archivo'); return r.json(); })
+      .then(j => { BIBLE = {}; j.b.forEach(b => { BIBLE[b.id] = b.c; }); return BIBLE; })
+      .catch(e => { bibleLoading = null; throw e; });
+  }
+  return bibleLoading;
+}
+
+function bibleView(h){
+  const p = h === '#biblia' ? [] : h.slice(8).split('-');
+  view.innerHTML = '<h1>Biblia</h1><p class="crumb">Cargando la Biblia…</p>';
+  loadBible().then(B => {
+    if(location.hash !== h) return;
+    const id = p[0], c = +p[1], v = +p[2];
+    if(id && B[id] && c && B[id][c - 1]) bibleRead(B, id, c, v);
+    else if(id && B[id]) bibleChapters(B, id);
+    else bibleBooks(B);
+  }).catch(() => {
+    if(location.hash !== h) return;
+    view.innerHTML = '<h1>Biblia</h1><div class="empty">La Biblia todavía no está en esta versión de la app. Ábrela una vez con internet o instala la versión más reciente.</div>';
+  });
+}
+
+function bibleBooks(B){
+  const btn = ([id, n]) => B[id] ? `<a class="bbtn" href="#biblia-${id}">${n}</a>` : '';
+  const last = BS.last && B[BS.last.split('-')[0]] ? BS.last : '';
+  view.innerHTML = `
+    <h1>Biblia</h1>
+    <p class="crumb">Reina-Valera 1909, de dominio público.</p>
+    ${last ? `<a class="assist" href="#biblia-${last}" style="margin-bottom:14px"><span class="qmark">›</span><span class="rt"><span class="rn">Seguir leyendo</span><span>${bookName(last.split('-')[0])} ${last.split('-')[1]}</span></span>${CHEV}</a>` : ''}
+    <label class="search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 L21 21"/></svg>
+      <input id="bq" type="search" placeholder="Buscar en la Biblia: pastor, amor…" autocomplete="off" aria-label="Buscar en la Biblia"></label>
+    <div id="bres"></div>
+    <div id="blist">
+      <h2>Antiguo Testamento</h2><div class="bgrid">${BOOKS.slice(0, 39).map(btn).join('')}</div>
+      <h2>Nuevo Testamento</h2><div class="bgrid">${BOOKS.slice(39).map(btn).join('')}</div>
+    </div>`;
+  const q = document.getElementById('bq');
+  q.addEventListener('input', () => { clearTimeout(bTimer); bTimer = setTimeout(() => bibleSearch(B, q.value), 250); });
+}
+
+function bibleSearch(B, raw){
+  const res = document.getElementById('bres'), list = document.getElementById('blist');
+  if(!res) return;
+  const q = norm(raw.trim());
+  if(q.length < 3){ res.innerHTML = ''; list.hidden = false; return; }
+  if(!BIDX){
+    BIDX = [];
+    BOOKS.forEach(([id]) => (B[id] || []).forEach((ch, ci) => ch.forEach((t, vi) => { if(t) BIDX.push([id, ci + 1, vi + 1, norm(t), t]); })));
+  }
+  const words = q.split(/\s+/);
+  const hits = BIDX.filter(x => words.every(w => x[3].includes(w)));
+  list.hidden = true;
+  if(!hits.length){ res.innerHTML = `<div class="empty">No hay versículos con “${esc(raw.trim())}”.</div>`; return; }
+  const shown = hits.slice(0, 60);
+  res.innerHTML = `<p class="crumb">${hits.length > 60 ? `Mostrando 60 de ${hits.length} versículos. Agrega otra palabra para afinar.` : `${hits.length} versículo${hits.length === 1 ? '' : 's'}.`}</p>
+    <div class="list">${shown.map(x => `<a class="row" href="#biblia-${x[0]}-${x[1]}-${x[2]}"><span class="rt"><span class="rn">${bookName(x[0])} ${x[1]}:${x[2]}</span><span class="rd">${esc(x[4])}</span></span>${CHEV}</a>`).join('')}</div>`;
+}
+
+function bibleChapters(B, id){
+  view.innerHTML = `
+    <div class="fmeta"><a href="#biblia">Biblia</a></div>
+    <h1>${bookName(id)}</h1>
+    <div class="cgrid">${B[id].map((_, i) => `<a class="cbtn" href="#biblia-${id}-${i + 1}">${i + 1}</a>`).join('')}</div>`;
+}
+
+function bibleRead(B, id, c, v){
+  const bi = BOOKS.findIndex(b => b[0] === id);
+  let prev = null, next = null;
+  if(c > 1) prev = [id, c - 1];
+  else for(let i = bi - 1; i >= 0; i--){ const pid = BOOKS[i][0]; if(B[pid]){ prev = [pid, B[pid].length]; break; } }
+  if(c < B[id].length) next = [id, c + 1];
+  else for(let i = bi + 1; i < BOOKS.length; i++){ const nid = BOOKS[i][0]; if(B[nid]){ next = [nid, 1]; break; } }
+  const lab = x => `${bookName(x[0])} ${x[1]}`;
+  view.innerHTML = `
+    <div class="fmeta"><a href="#biblia">Biblia</a><span>›</span><a href="#biblia-${id}">${bookName(id)}</a></div>
+    <div class="rhead"><h1>${bookName(id)} ${c}</h1><div class="fsz"><button id="fsm" aria-label="Letra más chica">A−</button><button id="fsp" aria-label="Letra más grande">A+</button></div></div>
+    <div class="btext" id="btext" style="font-size:${BS.fs}px">${B[id][c - 1].map((t, i) => t ? `<span class="vs" id="v${i + 1}"><sup>${i + 1}</sup>${esc(t)} </span>` : '').join('')}</div>
+    <div class="bnav">${prev ? `<a class="big alt" href="#biblia-${prev[0]}-${prev[1]}">‹ ${lab(prev)}</a>` : '<span></span>'}${next ? `<a class="big alt" href="#biblia-${next[0]}-${next[1]}">${lab(next)} ›</a>` : '<span></span>'}</div>`;
+  BS.last = `${id}-${c}`; saveStore('biblia-v1', BS);
+  const setFs = d => { BS.fs = Math.max(16, Math.min(32, BS.fs + d)); document.getElementById('btext').style.fontSize = BS.fs + 'px'; saveStore('biblia-v1', BS); };
+  document.getElementById('fsm').addEventListener('click', () => setFs(-2));
+  document.getElementById('fsp').addEventListener('click', () => setFs(2));
+  if(v){
+    const el = document.getElementById('v' + v);
+    if(el){ el.classList.add('hl'); setTimeout(() => el.scrollIntoView({block:'center'}), 0); }
+  }
+}
+
 /* Plan familiar */
 const PLAN_L = [['reunion','Punto de reunión familiar'],['reunion2','Si no se puede llegar ahí'],['albergue','Albergue más cercano'],['hospital','Hospital más cercano'],['ruta','Ruta para salir de la ciudad']];
 const PLAN_T = [['pc','Protección Civil de tu municipio'],['fuera','Familiar fuera de tu ciudad (nombre y teléfono)']];
@@ -1121,7 +1264,8 @@ let trail = [location.hash];
 function parentOf(h){
   if(h.startsWith('#ficha-')) return '#sec-' + h[7];
   if(h.startsWith('#preg-')) return '#sec-' + secOfNode(h.slice(6)).code.toLowerCase();
-  if(h === '#sos' || h === '#plan' || h === '#mochila') return '#';
+  if(h === '#sos' || h === '#plan' || h === '#mochila' || h === '#biblia') return '#';
+  if(h.startsWith('#biblia-')){ const p = h.slice(8).split('-'); return p.length > 1 ? '#biblia-' + p[0] : '#biblia'; }
   if(h.startsWith('#mapa')) return '#sec-m';
   return '#';
 }
@@ -1138,6 +1282,7 @@ function route(){
   else if(h === '#sos') sosView();
   else if(h === '#plan') planView();
   else if(h === '#mochila') mochilaView();
+  else if(h.startsWith('#biblia')) bibleView(h);
   else if(h.startsWith('#mapa')) { mapZoom = 0; mapView(h === '#mapa' ? 0 : +h.slice(6) || 0); }
   else homeView();
   window.scrollTo(0, 0);
