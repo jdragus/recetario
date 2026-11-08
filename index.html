@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E0AB2A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Recetario">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Recetario de emergencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEFED; --surface:#FFFFFF; --text:#1D2125; --muted:#535C61; --line:#CDD3D1;
+  --accent:#E0AB2A; --accent-ink:#2A2000; --note:#FFF3D2; --paper:#DCDCD5;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#141719;--surface:#1E2225;--text:#E6E8E6;--muted:#A3ABAF;--line:#343A3D;
+    --accent:#E8B73A;--accent-ink:#231A00;--note:#2C2612;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#141719;--surface:#1E2225;--text:#E6E8E6;--muted:#A3ABAF;--line:#343A3D;
+  --accent:#E8B73A;--accent-ink:#231A00;--note:#2C2612;color-scheme:dark}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:18px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #2F6BFF;outline-offset:2px}
+
+/* Barra superior */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.hdr-in{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px;min-height:60px}
+.back{width:42px;height:42px;flex:none;border:none;background:transparent;border-radius:12px;display:grid;place-items:center;cursor:pointer}
+.back[hidden]{display:none}
+.back:active{background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand .logo{width:34px;height:34px;flex:none;color:var(--text)}
+.hdr .bolt{fill:var(--surface)}
+.bt{font-weight:700;font-size:17px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lema{font-size:14px;color:var(--muted);line-height:1.2}
+
+main{max-width:620px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:28px;line-height:1.18;margin:4px 0 14px}
+h2{font-size:19px;line-height:1.3;margin:22px 0 8px}
+p{margin:0 0 12px}
+
+/* Inicio */
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:0 14px;margin-bottom:16px}
+.search:focus-within{border-color:var(--text)}
+.search svg{flex:none;color:var(--muted)}
+.search input{flex:1;min-width:0;border:none;background:transparent;color:var(--text);font:inherit;padding:14px 0;outline:none}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:14px;text-decoration:none;border-top:1px solid var(--line);min-height:68px}
+.row:first-child{border-top:none}
+.row:active{background:var(--bg)}
+.tile{flex:none;width:48px;height:48px;border-radius:12px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:22px}
+.chip{flex:none;min-width:44px;height:30px;padding:0 8px;border-radius:8px;border:1.5px solid var(--text);display:grid;place-items:center;font-weight:700;font-size:15px}
+.rt{flex:1;min-width:0;display:flex;flex-direction:column}
+.rn{font-weight:700;font-size:19px;line-height:1.25}
+.rd{color:var(--muted);font-size:15px;line-height:1.3}
+.chev{flex:none;color:var(--muted)}
+.credit{margin:22px 0 0;text-align:center;color:var(--muted);font-size:15px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:16px;padding:18px;color:var(--muted)}
+
+/* Sección */
+.shead{display:flex;align-items:center;gap:14px;margin:4px 0 14px}
+.shead h1{margin:0}
+.rule{background:var(--note);border-left:5px solid var(--accent);border-radius:4px 12px 12px 4px;padding:12px 14px;margin-bottom:16px}
+.assist{display:flex;align-items:center;gap:14px;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:16px;text-decoration:none}
+.assist:active{filter:brightness(.94)}
+.qmark{flex:none;width:44px;height:44px;border-radius:50%;border:3px solid currentColor;display:grid;place-items:center;font-weight:700;font-size:24px}
+.assist .rt span:last-child{font-size:15px}
+.assist .chev{color:var(--accent-ink)}
+
+/* Pregunta */
+.crumb{color:var(--muted);font-size:15px;margin:4px 0 6px}
+.qt{font-size:30px;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{width:100%;text-align:left;background:var(--surface);border:2px solid var(--text);border-radius:14px;padding:16px 18px;font-size:21px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.opt:active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* Ficha */
+.fmeta{display:flex;align-items:center;gap:10px;margin:4px 0 4px;font-size:15px;color:var(--muted)}
+.fmeta a{text-decoration:none}
+.need{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.need strong{display:block;font-size:15px;color:var(--muted);margin-bottom:2px}
+.need p{margin:0}
+.fig{margin:0 0 16px;background:var(--paper);border-radius:14px;padding:14px;display:flex;justify-content:center}
+.fig svg{width:100%;max-width:340px;height:auto;max-height:380px}
+ol.steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:4px;padding:6px 0}
+ol.steps li::before{content:counter(s);width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:16px;margin-top:-1px}
+ul.bul{margin:0 0 14px;padding:0 0 0 22px}
+ul.bul li{padding:4px 0}
+.note{background:var(--note);border:2px solid var(--accent);border-radius:12px;padding:12px 14px;margin:6px 0 14px}
+
+/* Mapa */
+.warn{display:inline-block;border:2px solid var(--text);border-radius:8px;padding:2px 10px;font-weight:700;font-size:15px}
+.mapbox{background:var(--paper);border-radius:14px;overflow:hidden;aspect-ratio:4/3;margin:8px 0 12px;border:1px solid var(--line)}
+.mapbox svg{display:block;width:100%;height:100%}
+.mctl{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:none;background:transparent;border-radius:9px;padding:8px 12px;font-size:15px;font-weight:700;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--text);color:var(--surface)}
+.zoom{display:flex;gap:8px}
+.zoom button{width:46px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:24px;font-weight:700;cursor:pointer;line-height:1}
+.zoom button:disabled{opacity:.35}
+.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;color:var(--muted);margin-bottom:18px}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg svg{background:var(--paper);border-radius:6px}
+
+/* SOS */
+.brand>span{min-width:0}
+.sosbtn{margin-left:auto;flex:none;text-decoration:none;font-weight:700;font-size:16px;border:2px solid var(--text);border-radius:999px;padding:6px 14px}
+.sosbtn[aria-current="page"]{background:var(--text);color:var(--surface)}
+.morse{font-size:30px;letter-spacing:4px;font-weight:700;text-align:center;margin:6px 0 16px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;font-size:18px;cursor:pointer}
+.tog input{width:24px;height:24px;accent-color:var(--accent)}
+.big{display:block;width:100%;border:none;border-radius:18px;padding:20px;font-size:24px;font-weight:700;background:var(--accent);color:var(--accent-ink);cursor:pointer;margin:14px 0 0}
+.big.alt{background:var(--surface);color:var(--text);border:2px solid var(--text);margin-top:10px}
+.status{color:var(--muted);font-size:15px;min-height:1.4em;margin:12px 0}
+.sig{position:fixed;inset:0;z-index:30;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;text-align:center;padding:0 20px calc(env(safe-area-inset-bottom,0px) + 28px);cursor:pointer}
+.sig.on{background:#fff}
+.sig span{color:#808080;font-size:18px;font-weight:700}
+.sig small{color:#808080;font-size:14px}
+
+/* Plan familiar y mochila */
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fld span{font-size:15px;color:var(--muted)}
+.fld input,.fld select{font:inherit;color:var(--text);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
+.fld input:focus,.fld select:focus{border-color:var(--text);outline:none}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 14px 4px;margin-bottom:12px}
+.pcard .fld input,.pcard .fld select{background:var(--bg)}
+.phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.del{border:1.5px solid var(--line);background:transparent;border-radius:10px;padding:6px 12px;font-size:15px;cursor:pointer}
+.ckl{list-style:none;padding:0}
+.ckl label{display:flex;gap:12px;align-items:flex-start;cursor:pointer;padding:4px 0}
+.ckl input{width:24px;height:24px;flex:none;margin-top:1px;accent-color:var(--accent)}
+.ckl input:checked + span{color:var(--muted);text-decoration:line-through}
+.revt{font-weight:700;margin:6px 0 0}
+.addrow{display:flex;gap:8px;margin:10px 0 6px}
+.addrow input{flex:1;min-width:0;font:inherit;color:var(--text);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+.addrow input:focus{border-color:var(--text);outline:none}
+.addrow button{border:none;border-radius:12px;padding:0 16px;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer}
+.ckl li.xi{display:flex;align-items:flex-start;gap:8px}
+.ckl li.xi label{flex:1}
+
+/* Pantalla de inicio */
+.splash{position:fixed;inset:0;z-index:20;background:var(--accent);color:var(--accent-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;transition:opacity .35s}
+.splash .logo{width:120px;height:120px}
+.splash .bolt{fill:var(--accent)}
+.splash .st{font-size:32px;font-weight:700;line-height:1.15}
+.splash .sl{font-size:20px;border-top:2px solid currentColor;border-bottom:2px solid currentColor;padding:4px 16px}
+.splash .sd{font-size:16px;margin-top:8px}
+.splash.out{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion: reduce){.splash{transition:none}}
+</style>
+</head>
+<body>
+<div class="splash" id="splash" role="presentation">
+  <svg class="logo" viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="62" fill="none" stroke="currentColor" stroke-width="8"/><path d="M70 20 C70 20 34 64 34 88 a36 36 0 0 0 72 0 C106 64 70 20 70 20 Z" fill="currentColor"/><polygon class="bolt" points="78,56 56,94 70,94 62,122 88,82 73,82 82,56"/></svg>
+  <div class="st">Recetario de emergencia</div>
+  <div class="sl">Mantente seguro</div>
+  <div class="sd">Desarrollado por DRAGUSTINOVIS Labs</div>
+</div>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <button class="back" id="back" aria-label="Regresar" hidden><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button>
+    <a class="brand" href="#" aria-label="Inicio" style="text-decoration:none">
+      <svg class="logo" viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="62" fill="none" stroke="currentColor" stroke-width="10"/><path d="M70 20 C70 20 34 64 34 88 a36 36 0 0 0 72 0 C106 64 70 20 70 20 Z" fill="currentColor"/><polygon class="bolt" points="78,56 56,94 70,94 62,122 88,82 73,82 82,56"/></svg>
+      <span><span class="bt" style="display:block">Recetario de emergencia</span><span class="lema">Mantente seguro</span></span>
+    </a>
+    <a class="sosbtn" href="#sos" id="sosLink">SOS</a>
+  </div>
+</header>
+
+<main id="view" aria-live="polite"></main>
+
+<script>
+/* ---------- Contenido ---------- */
+const SECS = [
+  {code:'A', name:'Agua', desc:'Hervir, cloro, filtro y destilador', rule:'Filtrar quita la tierra; desinfectar quita los microbios.', start:'a0', fichas:['A1','A2','A3','A4','A5','A6']},
+  {code:'H', name:'Huracanes e inundaciones', desc:'Antes, durante y después', rule:'Si Protección Civil pide evacuar, sal sin esperar.', start:'h1', fichas:['H1','H2','H3','H4']},
+  {code:'N', name:'Sismos y otros riesgos', desc:'Sismos, frío, volcanes e incendios', rule:'Practica en los simulacros: en un sismo no hay tiempo de pensar.', start:'n1', fichas:['N1','N2','N3','N4','N5','N6']},
+  {code:'E', name:'Energía', desc:'Solar, baterías, cables y luz', rule:'La energía se guarda en baterías y se gasta en lo esencial.', start:'e1', fichas:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10']},
+  {code:'F', name:'Fuego y cocina', desc:'Estufas caseras y cómo encender', rule:'Cocina siempre al aire libre o con buena ventilación.', start:'c1', fichas:['F1','F2','F3','F4']},
+  {code:'P', name:'Primeros auxilios', desc:'RCP, sangrado, quemaduras y calor', rule:'Primero tu seguridad, luego la del herido. Con señal, llama al 911.', start:'p1', fichas:['P1','P2','P3','P4','P5','P6']},
+  {code:'R', name:'Refugio y preparación', desc:'Lona, SOS, mochila e higiene', rule:'Mantente seco, protegido del viento y visible.', start:'r1', fichas:['R1','R2','R3','R4']},
+  {code:'S', name:'Seguridad y defensa', desc:'Casa, vecinos y cómo escapar', rule:'Evitar es mejor que enfrentar. Protégete y escapa.', start:'s1', fichas:['S1','S2','S3','S4']},
+  {code:'M', name:'Mapas y teléfonos', desc:'Mapas de México sin internet y números de emergencia', rule:'Descarga el mapa de tu estado antes de que lo necesites.', start:'m1', fichas:['M1','M2','M3']}
+];
+
+const F = {
+  A1:{t:'Hervir', b:[
+    ['need','Olla, fuego y tapa.'],
+    ['step','Si está turbia, fíltrala antes (ficha A3).'],
+    ['step','Hierve hasta que burbujee fuerte.'],
+    ['step','Mantén el hervor **1 minuto**; 3 minutos si estás arriba de 2,000 m.'],
+    ['step','Deja enfriar tapada.'],
+    ['step','Guárdala en un recipiente limpio y tapado.'],
+    ['note','Hervir mata microbios, pero no quita químicos ni sal.']]},
+  A2:{t:'Desinfectar con cloro', b:[
+    ['need','Cloro doméstico **sin aroma** (5 a 6 %) y un gotero o tapita.'],
+    ['step','Agua clara: **2 gotas por litro** (8 por galón).'],
+    ['step','Agua turbia ya filtrada: **4 gotas por litro**.'],
+    ['step','Revuelve y espera **30 minutos**.'],
+    ['step','Debe oler un poco a cloro. Si no huele, repite la dosis y espera 15 minutos más.'],
+    ['note','Nunca uses cloro con aroma, con detergente ni cloro en gel.']]},
+  A3:{t:'Filtro casero', fig:'filtro', b:[
+    ['need','Botella de 2 o 3 litros cortada, tela limpia, carbón de leña molido, arena fina, arena gruesa y grava.'],
+    ['h','Capas, de la boquilla hacia arriba'],
+    ['step','Tela en la boquilla.'],
+    ['step','Carbón molido, 5 cm.'],
+    ['step','Arena fina, 5 cm.'],
+    ['step','Arena gruesa, 5 cm.'],
+    ['step','Grava, 5 cm.'],
+    ['step','Tela arriba, para que el agua no revuelva las capas.'],
+    ['p','Vierte el agua arriba y recíbela abajo. Tira el primer litro.'],
+    ['note','El filtro **no desinfecta**. Después hierve (A1) o clora (A2).']]},
+  A4:{t:'Desinfección solar', b:[
+    ['need','Botellas PET transparentes de 2 litros o menos, sin etiqueta.'],
+    ['step','Usa solo agua **clara**; si está turbia, fíltrala antes.'],
+    ['step','Llena la botella y tápala.'],
+    ['step','Acuéstala al sol directo, mejor sobre lámina o techo.'],
+    ['step','Déjala **6 horas** con sol pleno, o **2 días** si está nublado.'],
+    ['note','No funciona con lluvia continua ni con botellas de color.']]},
+  A5:{t:'Destilador solar', fig:'destilador', b:[
+    ['p','Sirve para agua salada o sucia con químicos.'],
+    ['need','Recipiente grande, vaso limpio, plástico transparente y una piedra chica.'],
+    ['step','Agua sucia en el recipiente grande.'],
+    ['step','Vaso vacío en el centro, sin que le entre agua sucia.'],
+    ['step','Cubre con plástico bien sellado en los bordes.'],
+    ['step','Piedra sobre el plástico, justo arriba del vaso, para formar un cono.'],
+    ['step','El sol evapora el agua, se junta en el plástico y gotea limpia al vaso.'],
+    ['note','Da poca agua, de medio a un litro al día. Úsalo como último recurso.']]},
+  A6:{t:'Guardar agua', b:[
+    ['li','Recipientes limpios y con tapa, lejos del sol.'],
+    ['li','Calcula **4 litros por persona al día** para tomar y cocinar.'],
+    ['li','Cambia el agua guardada cada 6 meses.']]},
+
+  E1:{t:'Cargar con batería de carro', b:[
+    ['need','Batería de carro de 12 V y un cargador USB para encendedor con caimanes, o el carro mismo.'],
+    ['step','Con el carro: cargador en el encendedor y enciende el motor 15 minutos cada tanto, al aire libre.'],
+    ['step','Con batería suelta: caimán rojo al borne **+** y negro al **−**.'],
+    ['step','Conecta el celular al cargador USB.'],
+    ['note','Nunca prendas el carro en cochera cerrada: el monóxido de carbono mata y no huele. No dejes que la batería baje de 12 V o ya no arranca el carro.']]},
+  E2:{t:'Sistema solar básico', fig:'solar', b:[
+    ['need','Panel solar de 12 V, controlador de carga, batería de 12 V, cables, fusible e inversor (opcional, para 120 V).'],
+    ['h','Esquema, en este orden'],
+    ['step','Panel solar a la entrada “PV” o “Solar” del controlador.'],
+    ['step','Controlador, salida “Battery”, con fusible en el positivo, a la batería.'],
+    ['step','Batería a la salida USB para celulares, o al inversor para aparatos de 120 V.'],
+    ['lab','Al conectar','Primero la **batería** y después el **panel**. Para desconectar, al revés.'],
+    ['note','Nunca conectes el panel directo a la batería sin controlador. Pon el panel de frente al sol, inclinado hacia el sur.']]},
+  E3:{t:'Lámpara de aceite', b:[
+    ['need','Frasco de vidrio, aceite de cocina, mecha de algodón (tira de camiseta o cordel) y alambre o clip.'],
+    ['step','Llena el frasco con 2 o 3 cm de aceite.'],
+    ['step','Enreda la mecha en el alambre para que quede parada.'],
+    ['step','Deja salir 1 cm de mecha y lo demás sumergido.'],
+    ['step','Espera a que se empape y enciende.'],
+    ['note','Solo aceite de cocina, nunca gasolina ni alcohol. Lejos de cortinas, y nunca la dejes sola.']]},
+  E4:{t:'Ahorrar batería', b:[
+    ['li','Celular en modo avión; préndelo solo a ciertas horas para ver mensajes.'],
+    ['li','Brillo al mínimo y ahorro de energía activado.'],
+    ['li','Manda mensajes de texto en vez de llamar: pasan aunque la red esté saturada.'],
+    ['li','Usa linternas de pilas o de manivela antes que el celular.']]},
+  E5:{t:'Calcular tu sistema solar', b:[
+    ['p','Primero calcula cuánta energía gastas al día, en watts-hora (Wh).'],
+    ['step','Anota cada aparato, sus watts y cuántas horas al día lo usas. Watts × horas = Wh al día.'],
+    ['step','Suma todo. Ejemplo: 2 focos LED de 9 W por 5 h = 90 Wh; 2 celulares = 30 Wh; radio de 5 W por 4 h = 20 Wh; ventilador de 40 W por 4 h = 160 Wh. **Total: 300 Wh.**'],
+    ['step','**Panel:** divide entre 4 horas de sol fuerte y suma 30 % por pérdidas. 300 ÷ 4 × 1.3 ≈ **100 W de panel**.'],
+    ['step','**Batería de plomo-ácido:** Wh del día × 2 ÷ 12 V, para no bajarla de la mitad. 300 × 2 ÷ 12 = **50 Ah**. Para 2 días nublados, el doble: 100 Ah.'],
+    ['step','**Batería de litio:** Wh del día ÷ 12 V × 1.2. 300 ÷ 12 × 1.2 = **30 Ah** por día.'],
+    ['step','**Controlador:** watts del panel ÷ 12 V, más 25 %. 100 W ÷ 12 × 1.25 ≈ 10 A: compra uno de 10 A o mejor de 15 A.'],
+    ['step','**Inversor:** suma los watts de lo que prenderás al mismo tiempo y agrega 25 %. Bombas y refrigeradores arrancan con unas 3 veces su consumo.'],
+    ['note','Un refrigerador chico gasta alrededor de 1,000 Wh al día, más que todo el ejemplo junto. Calcula bien antes de conectarlo.']]},
+  E6:{t:'Tipos de batería', b:[
+    ['li','**De carro:** sirve en emergencias, pero se daña si la descargas seguido. Úsala solo hasta la mitad.'],
+    ['li','**Ciclo profundo (plomo-ácido, AGM o gel):** hecha para cargar y descargar a diario. No la bajes de la mitad. Dura de 3 a 6 años.'],
+    ['li','**Litio LiFePO4:** más cara, pero pesa menos, aguanta usar de 80 a 90 % de su carga y dura 10 años o más. Necesita controlador compatible con litio.'],
+    ['h','Cuánta carga tiene (plomo-ácido)'],
+    ['p','Mídela con multímetro después de 2 horas sin cargar ni usar.'],
+    ['li','**12.7 V o más:** llena.'],
+    ['li','**12.4 V:** tres cuartos.'],
+    ['li','**12.2 V:** a la mitad. Ya no la bajes más.'],
+    ['li','**12.0 V o menos:** casi vacía. Cárgala ya.'],
+    ['note','Las de plomo-ácido sueltan gas al cargar: ponlas en un lugar ventilado, lejos de chispas y fuego.']]},
+  E7:{t:'Orientación e inclinación del panel', fig:'inclinacion', b:[
+    ['step','Pon el panel viendo hacia el **sur**.'],
+    ['step','Inclínalo con un ángulo parecido a la latitud de tu ciudad. En México va de unos 15° en el sur a 32° en la frontera norte. Ejemplos: CDMX 19°, Guadalajara y Mérida 21°, Monterrey y Matamoros 26°, Hermosillo 29°, Tijuana 32°.'],
+    ['step','Evita cualquier sombra de 9:00 a 15:00: aunque tape solo una parte, el panel baja mucho.'],
+    ['step','En verano bájale unos 15° y en invierno súbele 15° para ganar un poco más.'],
+    ['step','Sujétalo bien. Antes de un huracán, quítalo o amárralo: suelto con viento fuerte es peligroso.']]},
+  E8:{t:'Cables, fusibles y conexiones', b:[
+    ['step','Usa cable de cobre del grueso correcto: para 10 A y hasta 3 m, calibre 12 AWG; para 20 A, calibre 10 AWG. Entre más largo el cable, más grueso.'],
+    ['step','Rojo para positivo y negro para negativo, siempre.'],
+    ['step','Pon un fusible en el cable positivo, lo más cerca posible de la batería, un poco mayor que la corriente normal: para 10 A, fusible de 15 A.'],
+    ['step','El inversor va directo a la batería, con cable grueso y su propio fusible, no a la salida del controlador.'],
+    ['step','Aprieta bien las terminales y protégelas con cinta o capuchón.'],
+    ['step','Al conectar: batería al controlador y después el panel. Al desconectar, al revés.'],
+    ['note','Una batería en corto puede derretir cables y causar un incendio. Nunca juntes los dos bornes con una herramienta de metal.']]},
+  E9:{t:'Cargadores solares portátiles', b:[
+    ['li','Un panel plegable de 20 a 30 W carga un celular en 2 a 4 horas de sol directo.'],
+    ['li','Es mejor cargar primero un power bank y de ahí el celular: el sol va y viene, y el power bank guarda la energía.'],
+    ['li','Ponlo de frente al sol y muévelo cada hora o dos.'],
+    ['li','No dejes el celular ni el power bank al sol directo: el calor los daña.'],
+    ['li','Los power banks con panelito integrado cargan muy lento: sirven de apoyo, no como fuente principal.'],
+    ['note','Revisa la carga de tus power banks cada mes, aunque no los uses.']]},
+  E10:{t:'Mantenimiento y fallas', b:[
+    ['h','Mantenimiento'],
+    ['li','Limpia el panel con agua y trapo suave cada 2 o 3 semanas: el polvo y la ceniza le quitan potencia.'],
+    ['li','Revisa cables, terminales y fusibles cada mes.'],
+    ['li','En baterías de plomo-ácido abiertas, revisa el nivel del líquido y rellena solo con agua destilada.'],
+    ['h','Si no carga'],
+    ['step','¿Hay sombra o el panel está sucio? Límpialo y muévelo.'],
+    ['step','Revisa el fusible y que los cables estén bien apretados.'],
+    ['step','Revisa la pantalla o las luces del controlador: muchos marcan error si la batería está muy baja o conectada al revés.'],
+    ['step','Mide el panel al sol, desconectado: uno de 12 V debe dar unos 20 V. Si da 0, revisa los cables o el panel está dañado.'],
+    ['step','Mide la batería: si está por debajo de 10.5 V, puede estar dañada.'],
+    ['note','Antes de tocar conexiones, desconecta el panel y tápalo: aunque esté nublado sigue generando voltaje.']]},
+
+  F1:{t:'Estufa de lata', b:[
+    ['need','2 latas de refresco o una de atún, alcohol de 96° y un clavo.'],
+    ['step','Haz 8 a 10 agujeros con el clavo alrededor del borde de arriba.'],
+    ['step','Ponla sobre piso firme, sin nada que se queme cerca.'],
+    ['step','Vierte 2 o 3 cucharadas de alcohol.'],
+    ['step','Enciende con cuidado: de día la flama casi no se ve.'],
+    ['step','Pon la olla sobre 3 piedras o ladrillos alrededor.'],
+    ['note','Nunca rellenes alcohol con la lata encendida o caliente.']]},
+  F2:{t:'Estufa cohete', fig:'cohete', b:[
+    ['need','16 a 20 ladrillos o bloques y ramitas secas.'],
+    ['h','Esquema, en forma de L'],
+    ['step','Base: ladrillos en L acostada; la boca horizontal es por donde metes la leña.'],
+    ['step','Chimenea: sube ladrillos en la esquina, 3 o 4 niveles.'],
+    ['step','Mete ramitas delgadas por la boca y enciende abajo.'],
+    ['step','Olla arriba de la chimenea, sobre dos varillas o piedras para que salga el aire.'],
+    ['lab','Ventaja','Gasta poca leña y casi no echa humo.']]},
+  F3:{t:'Encender fuego', b:[
+    ['step','Junta en este orden: **yesca** (algodón, papel, pasto seco), **astillas** (palitos delgados) y **leña** (del grueso de tu muñeca).'],
+    ['step','Sin cerillos: chispa de un encendedor vacío, o lupa con sol directo sobre la yesca.'],
+    ['step','Con pila: frota fibra de acero (fibra para trastes) en los dos polos de una pila de 9 V.'],
+    ['step','Sopla suave y agrega astillas, luego leña.']]},
+  F4:{t:'Comida sin refrigerador', b:[
+    ['li','Come primero lo del refrigerador, luego lo del congelador y al final las latas.'],
+    ['li','Si huele mal o la lata está inflada, tírala.'],
+    ['li','Arroz, frijol, avena y latas duran meses en botes cerrados.']]},
+
+  P1:{t:'RCP en adulto', b:[
+    ['step','Acuéstala boca arriba en piso firme.'],
+    ['step','Talón de tu mano en el centro del pecho y la otra mano encima.'],
+    ['step','Brazos rectos: empuja fuerte **5 cm** hacia abajo.'],
+    ['step','Ritmo de **100 a 120 por minuto**, sin parar.'],
+    ['step','Sigue hasta que respire o llegue ayuda.']]},
+  P2:{t:'Sangrado', b:[
+    ['step','Presiona directo sobre la herida con tela limpia, **sin soltar 10 minutos**.'],
+    ['step','Si se empapa, pon más tela encima; no quites la primera.'],
+    ['step','Si es brazo o pierna, levántalo.'],
+    ['step','Herida chica: lava con agua limpia y jabón, y cubre.'],
+    ['note','Si sale a chorros y no para con presión, busca ayuda médica urgente.']]},
+  P3:{t:'Quemaduras', b:[
+    ['step','Agua fresca corriendo **20 minutos**.'],
+    ['step','Quita anillos o ropa que no esté pegada.'],
+    ['step','Cubre suelto con tela limpia o plástico de cocina.'],
+    ['note','Nada de hielo, pasta de dientes ni mantequilla, y no revientes ampollas.']]},
+  P4:{t:'Suero casero', b:[
+    ['lab','Mezcla','1 litro de agua potable, **6 cucharaditas rasas de azúcar** y **media cucharadita rasa de sal**.'],
+    ['step','Revuelve hasta que se disuelva.'],
+    ['step','Da tragos pequeños y seguidos.'],
+    ['step','Prepara uno nuevo cada día.'],
+    ['note','Si no orina en 8 horas, está muy adormilado o es un bebé, busca ayuda médica urgente.']]},
+
+  R1:{t:'Refugio con lona', fig:'tienda', b:[
+    ['need','Lona o plástico grueso, cuerda y 4 estacas o piedras.'],
+    ['h','Esquema, tienda en A'],
+    ['step','Amarra la cuerda tensa entre dos árboles o postes, a la altura de tu cintura.'],
+    ['step','Cuelga la lona por la mitad sobre la cuerda.'],
+    ['step','Abre los lados y fíjalos al suelo con estacas o piedras.'],
+    ['step','Pon cartón, ramas o ropa en el piso: el suelo roba más calor que el aire.'],
+    ['note','Busca terreno alto, lejos de ríos, cables caídos y árboles dañados.']]},
+  R2:{t:'Señales de auxilio', b:[
+    ['li','**Tres de todo es auxilio:** 3 silbatazos, 3 destellos o 3 fogatas en triángulo.'],
+    ['li','**SOS:** 3 cortos, 3 largos, 3 cortos, con linterna o silbato.'],
+    ['li','**En el suelo o el techo:** escribe SOS de al menos 3 m con piedras, ropa o pintura.'],
+    ['li','**Espejo o CD:** refleja el sol hacia aviones o helicópteros.'],
+    ['li','Acuerda con tu familia un **punto de reunión** fijo.']]},
+
+  S1:{t:'Asegurar la casa', b:[
+    ['step','Refuerza las puertas con una barra o tabla atravesada por dentro.'],
+    ['step','Cubre ventanas rotas con madera o lámina.'],
+    ['step','De noche, que no se vea luz desde afuera.'],
+    ['step','Ten una salida de escape que no sea la puerta principal.']]},
+  S2:{t:'Organizarse con vecinos', b:[
+    ['li','Turnos de guardia de 2 personas, de 2 o 3 horas.'],
+    ['li','Una señal de alerta acordada, como 3 silbatazos.'],
+    ['li','Lista de quién tiene médico, herramientas, agua o planta de luz.'],
+    ['li','Cuiden primero a niños, adultos mayores y enfermos.']]},
+  S3:{t:'Moverse seguro', b:[
+    ['li','Sal de día y acompañado; avisa a dónde vas y a qué hora regresas.'],
+    ['li','No muestres comida, agua ni dinero en público.'],
+    ['li','Guarda tus reservas en varios lugares escondidos, no todo junto.'],
+    ['li','Evita multitudes y saqueos; si ves problemas, da la vuelta.']]},
+  S4:{t:'Zafarte y escapar', b:[
+    ['step','**Grita fuerte** “¡Ayúdenme!” o “¡Fuego!” para llamar la atención.'],
+    ['step','**Si te agarran la muñeca:** gira tu mano hacia el pulgar del agresor, la parte más débil, y jala fuerte.'],
+    ['step','**Si te abrazan por detrás:** baja tu peso, pisa fuerte su empeine y empuja sus brazos hacia abajo.'],
+    ['step','Apenas te sueltes, **corre** hacia donde haya gente.'],
+    ['note','Si te quieren quitar cosas, entrégalas. Ningún objeto vale tu vida.']]},
+
+  H1:{t:'Antes del huracán', b:[
+    ['p','En Matamoros la temporada de huracanes va de junio a noviembre.'],
+    ['step','Sigue los avisos de Protección Civil y del Servicio Meteorológico Nacional por radio o celular.'],
+    ['step','Prepara la mochila de emergencia (ficha R3) y guarda **4 litros de agua por persona al día**, para al menos 3 días.'],
+    ['step','Carga celulares, power banks y lámparas; ten pilas de repuesto.'],
+    ['step','Mete o amarra todo lo que el viento pueda lanzar: macetas, láminas, tinacos vacíos.'],
+    ['step','Protege las ventanas con madera. La cinta en cruz no sirve.'],
+    ['step','Guarda papeles importantes en bolsas de plástico cerradas.'],
+    ['step','Ubica tu albergue más cercano y la ruta para llegar (ficha M2).'],
+    ['note','Si Protección Civil ordena evacuar, hazlo de inmediato. Lleva medicinas y documentos.']]},
+  H2:{t:'Durante el huracán', b:[
+    ['step','Quédate en un cuarto interior, sin ventanas. Si el agua sube, busca un lugar más alto.'],
+    ['step','Aléjate de ventanas y puertas de vidrio.'],
+    ['step','Desconecta aparatos. Si entra agua, corta la luz en el interruptor principal solo si estás en un lugar seco.'],
+    ['step','Escucha la radio de pilas para seguir los avisos.'],
+    ['note','Si de repente hay calma, puede ser el ojo del huracán: el viento regresa con fuerza. No salgas hasta que las autoridades lo confirmen.']]},
+  H3:{t:'Inundación', b:[
+    ['step','Sube a un lugar alto, segundo piso o azotea, con agua, celular y algo para hacer señales (ficha R2).'],
+    ['step','Corta la luz y el gas si puedes hacerlo sin tocar agua.'],
+    ['step','**No camines ni manejes por calles inundadas:** 15 cm de agua corriendo pueden tumbarte y 30 cm pueden arrastrar un carro.'],
+    ['step','No toques cables caídos ni el agua cerca de ellos.'],
+    ['step','No tomes agua de la inundación; desinfecta toda el agua (sección Agua).'],
+    ['note','El agua de inundación trae aguas negras y animales. Lava con jabón cualquier herida que se moje.']]},
+  H4:{t:'Después del huracán', b:[
+    ['step','Sal solo cuando las autoridades digan que es seguro.'],
+    ['step','Antes de entrar a la casa, revisa grietas, olor a gas y cables dañados.'],
+    ['step','Si hueles gas, no prendas luces ni cerillos: sal y avisa.'],
+    ['step','Reporta cables caídos a CFE al **071** y no te acerques.'],
+    ['step','Tira la comida que se mojó o que estuvo sin frío más de 4 horas.'],
+    ['step','Vacía cubetas, llantas y botes con agua estancada para evitar el mosquito del dengue.'],
+    ['note','Usa la planta de luz solo afuera y lejos de ventanas: el humo puede matar.']]},
+
+  P5:{t:'Calor extremo', b:[
+    ['li','Toma agua seguido, aunque no tengas sed.'],
+    ['li','Evita el sol de las 11:00 a las 16:00.'],
+    ['li','Ropa ligera, de color claro, y sombrero.'],
+    ['li','De día cierra cortinas; de noche abre ventanas para que corra el aire.'],
+    ['li','Cuida más a bebés, adultos mayores, embarazadas y enfermos.'],
+    ['li','Nunca dejes a nadie, ni a mascotas, dentro de un carro cerrado.'],
+    ['note','Si alguien está mareado, confundido o con la piel muy caliente, ve a la ficha P6.']]},
+  P6:{t:'Golpe de calor', b:[
+    ['lab','Señales','Piel caliente y roja, mareo, confusión, dolor de cabeza, vómito o desmayo. Puede dejar de sudar.'],
+    ['step','Llama al **911** si hay señal. Es una emergencia.'],
+    ['step','Llévala a la sombra o a un lugar fresco.'],
+    ['step','Quítale la ropa de más.'],
+    ['step','Enfríala rápido: moja su cuerpo con agua fresca y échale aire; pon trapos mojados en cuello, axilas e ingles.'],
+    ['step','Si está despierta y puede tragar, dale agua a tragos pequeños o suero (ficha P4).'],
+    ['note','No le des medicina para la fiebre, alcohol, refresco ni café, y no la frotes con alcohol. Si deja de respirar, empieza RCP (ficha P1).']]},
+
+  R3:{t:'Mochila de emergencia', mochila:true, b:[
+    ['p','Una por persona, lista y cerca de la puerta.'],
+    ['li','**Agua:** botellas, y cloro sin aroma o pastillas para desinfectar.'],
+    ['li','**Comida para 3 días:** latas con abrelatas, galletas y cacahuates.'],
+    ['li','**Botiquín** y tus medicinas de cada día, con la receta.'],
+    ['li','**Luz y energía:** lámpara, pilas, power bank y radio de pilas.'],
+    ['li','**Documentos:** copias de INE, actas y papeles de la casa en bolsa de plástico cerrada.'],
+    ['li','**Efectivo** en billetes chicos.'],
+    ['li','**Ropa:** un cambio, impermeable y zapatos cerrados.'],
+    ['li','**Higiene:** jabón, papel, toallitas húmedas, toallas sanitarias y cubrebocas.'],
+    ['li','**Silbato**, encendedor y tus teléfonos importantes escritos en papel.'],
+    ['note','Revísala cada 6 meses y cambia el agua, la comida, las pilas y las medicinas que caduquen.']]},
+  R4:{t:'Higiene y baño sin agua', b:[
+    ['h','Lavarse con poca agua'],
+    ['li','Lávate las manos antes de comer y después del baño, aunque sea con un chorrito y jabón, o con gel con alcohol.'],
+    ['li','Báñate con un trapo húmedo y jabón, usando una cubeta pequeña.'],
+    ['li','Si el drenaje funciona, guarda el agua jabonosa y échala al baño para jalar.'],
+    ['h','Baño de emergencia con cubeta'],
+    ['step','Cubeta con tapa y una bolsa de basura gruesa adentro.'],
+    ['step','Después de cada uso, echa una capa de tierra seca, ceniza, cal o aserrín.'],
+    ['step','Si puedes, la orina en otra cubeta o en un hoyo lejos de pozos y del agua guardada.'],
+    ['step','Cuando la bolsa esté a la mitad, ciérrala, amárrala y guárdala lejos de la casa o entiérrala.'],
+    ['note','El baño, la basura y los pañales, siempre lejos de donde guardas agua y comida.']]},
+
+  N1:{t:'Sismo: qué hacer', b:[
+    ['step','Si suena la alerta y puedes salir rápido de la planta baja, sal caminando al punto de reunión.'],
+    ['step','Si no puedes salir, ve a una zona de menor riesgo: junto a columnas o muros firmes, lejos de ventanas.'],
+    ['step','Agáchate, cúbrete la cabeza y el cuello, y sujétate hasta que pase.'],
+    ['step','No uses elevadores ni bajes escaleras mientras tiembla.'],
+    ['step','En la calle, aléjate de postes, cables, bardas y vidrios.'],
+    ['note','No corro, no grito, no empujo.']]},
+  N2:{t:'Después del sismo', b:[
+    ['step','Revisa si hay heridos y da primeros auxilios (sección P).'],
+    ['step','Sal con cuidado y espera réplicas.'],
+    ['step','Revisa olor a gas, cables y grietas. Si hueles gas, no prendas nada y sal.'],
+    ['step','No entres a edificios dañados.'],
+    ['step','Usa el teléfono solo para emergencias; manda mensajes en vez de llamar.'],
+    ['step','Sigue los avisos por radio.']]},
+  N3:{t:'Alerta sísmica en el celular', b:[
+    ['p','El gobierno manda la alerta a los celulares por difusión celular: llega sin internet ni saldo, siempre que el teléfono tenga señal y las alertas activadas.'],
+    ['h','Actívala hoy'],
+    ['step','Android: en Ajustes busca “Alertas de emergencia” y activa todas.'],
+    ['step','iPhone: Configuración, Notificaciones, y hasta abajo activa “Alertas de emergencia”.'],
+    ['li','Suena con sismos fuertes, cercanos a magnitud 6, que detectan sensores, la mayoría en la costa.'],
+    ['li','No todo el país tiene cobertura, y si el sismo es cerca puede no dar tiempo: puede temblar sin aviso.'],
+    ['note','Practica en los simulacros nacionales para actuar sin pensar.']]},
+  N4:{t:'Frío y heladas', b:[
+    ['li','Ropa en capas; cubre cabeza, manos y pies.'],
+    ['li','Come caliente y toma líquidos tibios.'],
+    ['li','Cuida más a bebés y adultos mayores: pierden calor más rápido.'],
+    ['li','Tapa las rendijas de puertas y ventanas con trapos.'],
+    ['note','**Nunca uses anafre, brasero, estufa de leña ni calentador de gas en un cuarto cerrado:** el monóxido de carbono mata mientras duermes y no huele.'],
+    ['lab','Hipotermia','Temblor fuerte, piel fría, habla torpe y mucho sueño. Llévala a un lugar tibio, quítale la ropa mojada, abrígala con cobijas y dale bebidas tibias si está despierta. Llama al 911.']]},
+  N5:{t:'Volcanes y ceniza', b:[
+    ['p','Los volcanes activos tienen un semáforo de alerta: verde, amarillo y rojo. Sigue lo que diga Protección Civil.'],
+    ['h','Si cae ceniza'],
+    ['step','Quédate dentro y cierra puertas y ventanas.'],
+    ['step','Usa cubrebocas y lentes; no uses lentes de contacto.'],
+    ['step','Tapa tinacos, cisternas y comida.'],
+    ['step','Humedece un poco la ceniza antes de barrerla, métela en bolsas y no la tires al drenaje.'],
+    ['step','Si se junta mucha en el techo, retírala con cuidado: pesa y puede romperlo.'],
+    ['step','Evita manejar; si lo haces, no uses el limpiaparabrisas en seco.'],
+    ['note','Si piden evacuar, hazlo por las rutas marcadas.']]},
+  N6:{t:'Incendios forestales', b:[
+    ['step','Llama al **911** y di dónde ves el humo.'],
+    ['step','Aléjate en dirección contraria al viento, hacia zonas sin pasto ni árboles.'],
+    ['step','Si hay humo, cúbrete nariz y boca con un trapo húmedo y camina agachado.'],
+    ['step','Si dejas tu casa, cierra ventanas y corta el gas.'],
+    ['lab','Para evitarlos','No quemes basura ni pasto, apaga bien las fogatas con agua y tierra, y no tires colillas.'],
+    ['note','Nunca intentes apagar tú solo un incendio grande.']]},
+
+  M1:{t:'Mapas de México sin internet', b:[
+    ['p','Usa Organic Maps: es gratis, sin anuncios, y funciona sin internet una vez que bajas el mapa.'],
+    ['h','Prepáralo hoy, con internet'],
+    ['step','Instala Organic Maps desde Play Store o App Store.'],
+    ['step','Busca México y descarga tu estado y los estados vecinos.'],
+    ['step','Guarda como favoritos tu casa, tu punto de reunión, el albergue y el hospital más cercanos.'],
+    ['step','Pon el teléfono en modo avión: si ves las calles, ya quedó.'],
+    ['h','Ya sin internet'],
+    ['li','El GPS funciona sin datos ni saldo: ves dónde estás.'],
+    ['li','Busca “hospital”, “farmacia” o “gasolinera” y te muestra los cercanos.'],
+    ['li','Calcula rutas a pie o en carro.'],
+    ['note','Actualiza los mapas cada pocos meses para tener calles y lugares nuevos.']]},
+  M3:{t:'Teléfonos de emergencia', b:[
+    ['li','**911:** emergencias en todo el país: policía, ambulancia y bomberos. Funciona sin saldo.'],
+    ['li','**089:** denuncia anónima.'],
+    ['li','**071:** CFE, para cables caídos o falta de luz.'],
+    ['li','**Protección Civil de tu municipio:** ____________'],
+    ['li','**Un familiar fuera de tu ciudad:** ____________'],
+    ['note','Si la red está saturada, manda mensajes de texto: pasan más fácil que las llamadas.']]},
+  M2:{t:'Mi plan familiar', plan:true, b:[
+    ['p','Llena esta ficha con tu familia antes de cargar el recetario al equipo.'],
+    ['li','**Punto de reunión familiar:** ____________'],
+    ['li','**Si no se puede llegar ahí:** ____________'],
+    ['li','**Albergue más cercano:** ____________'],
+    ['li','**Hospital más cercano:** ____________'],
+    ['li','**Ruta para salir de la ciudad:** ____________'],
+    ['li','**Emergencias:** 911']]}
+};
+
+const N = {
+  a0:{text:'¿El agua es de mar o pudo mezclarse con químicos, como gasolina o fertilizante?', o:[['Sí','f:A5'],['No','a1']]},
+  a1:{text:'¿El agua está turbia o tiene tierra?', o:[['Sí','a1s'],['No','a2']]},
+  a1s:{text:'Primero fíltrala. El filtro quita la tierra, pero no los microbios.', o:[['Ver ficha A3, filtro casero','f:A3'],['Ya la filtré, seguir','a2']]},
+  a2:{text:'¿Puedes hacer fuego o tienes gas?', o:[['Sí','f:A1'],['No','a3']]},
+  a3:{text:'¿Tienes cloro sin aroma?', o:[['Sí','f:A2'],['No','a4']]},
+  a4:{text:'¿Hay sol y tienes botellas de plástico transparente?', o:[['Sí','f:A4'],['No','a4n']]},
+  a4n:{text:'Sin fuego, cloro ni sol, busca quién los tenga. Mientras, cuida el agua que ya tienes.', o:[['Ver ficha A6, guardar agua','f:A6'],['Volver al menú','menu']]},
+  e1:{text:'¿Qué necesitas?', o:[['Cargar celular o radio','e2'],['Luz en la noche','f:E3'],['Energía para varios aparatos','f:E2'],['Armar o revisar un sistema solar','e4']]},
+  e4:{text:'¿Qué quieres hacer?', o:[['Calcular cuánto necesito','f:E5'],['Elegir batería','f:E6'],['Instalar el panel','f:E7'],['Conectar cables y fusibles','f:E8'],['Algo no carga','f:E10']]},
+  e2:{text:'¿Tienes carro o batería de carro?', o:[['Sí','f:E1'],['No','e3']]},
+  e3:{text:'¿Tienes panel o cargador solar?', o:[['Panel solar','f:E2'],['Cargador solar portátil','f:E9'],['No tengo','f:E4']]},
+  c1:{text:'¿Tienes cerillos o encendedor?', o:[['Sí','c2'],['No','f:F3']]},
+  c2:{text:'¿Tienes gas o carbón?', o:[['Sí','c2s'],['No','c3']]},
+  c2s:{text:'Úsalo afuera, con asador o estufa de campamento. Nunca dentro de la casa.', o:[['Ver ficha F4, comida','f:F4'],['Volver al menú','menu']]},
+  c3:{text:'¿Tienes latas y alcohol de 96°?', o:[['Sí','f:F1'],['No','f:F2']]},
+  p1:{text:'¿La persona respira?', o:[['No','f:P1'],['Sí','p2']]},
+  p2:{text:'¿Qué le pasa?', o:[['Sangra mucho','f:P2'],['Tiene una quemadura','f:P3'],['Calor, mareo o confusión','f:P6'],['Diarrea o vómito','f:P4']]},
+  r1:{text:'¿Tu casa está segura? Sin grietas grandes, sin inundación y sin olor a gas.', o:[['Sí','r1s'],['No','f:R1']]},
+  r1s:{text:'Quédate en casa. Si necesitas que te encuentren, haz señales.', o:[['Ver ficha R2, señales','f:R2'],['Volver al menú','menu']]},
+  s1:{text:'¿Dónde estás?', o:[['En casa','s2'],['Voy a salir','f:S3'],['Me están agrediendo','f:S4']]},
+  s2:{text:'¿Qué quieres hacer?', o:[['Asegurar la casa','f:S1'],['Organizarme con vecinos','f:S2']]},
+  m1:{text:'¿Qué necesitas?', o:[['Mapas sin internet','f:M1'],['Mi punto de reunión','f:M2'],['Teléfonos de emergencia','f:M3']]},
+  n1:{text:'¿Qué está pasando?', o:[['Está temblando o sonó la alerta','f:N1'],['Ya pasó el temblor','f:N2'],['Hace mucho frío','f:N4'],['Cae ceniza o hay alerta volcánica','f:N5'],['Fuego o humo en el monte','f:N6']]},
+  h1:{text:'¿Ya llegó el huracán?', o:[['No, viene en camino','f:H1'],['Sí, está pasando','h2'],['Ya pasó','f:H4']]},
+  h2:{text:'¿Está entrando agua o subiendo en la calle?', o:[['Sí','f:H3'],['No','f:H2']]}
+};
+
+/* ---------- Esquemas (SVG en una sola tinta) ---------- */
+const T = 'fill="#222220" font-size="15"';
+const FIG = {
+filtro:`<svg viewBox="0 0 320 370" role="img" aria-label="Filtro casero por capas">
+<defs><pattern id="pf" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="0.9" fill="#222220"/></pattern>
+<pattern id="pc" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.9" fill="#222220"/><circle cx="8" cy="8" r="1.6" fill="#222220"/></pattern></defs>
+<rect x="41" y="160" width="128" height="40" fill="url(#pc)"/>
+<rect x="41" y="200" width="128" height="40" fill="url(#pf)"/>
+<rect x="41" y="240" width="128" height="40" fill="#3a3a37"/>
+<g stroke="#222220" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M105 2 V40 M97 31 L105 41 L113 31" stroke-width="2.5"/>
+<path d="M48 64 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 M48 82 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke-width="1.8"/>
+<g stroke-width="2"><circle cx="56" cy="134" r="6"/><circle cx="74" cy="148" r="6"/><circle cx="91" cy="132" r="6"/><circle cx="108" cy="148" r="6"/><circle cx="125" cy="133" r="6"/><circle cx="142" cy="147" r="6"/><circle cx="157" cy="132" r="6"/></g>
+<path d="M40 160 H170 M40 200 H170 M40 240 H170" stroke-width="1.5"/>
+<path d="M41 118 q16 -6 32 0 t32 0 t32 0 t32 0" stroke-width="3.5"/>
+<path d="M58 296 q12 -5 24 0 t24 0 t24 0 t24 0" stroke-width="3.5"/>
+<path d="M40 24 V280 L88 322 V336 M170 24 V280 L122 322 V336" stroke-width="2.5"/>
+<path d="M172 70 H182 M172 118 H182 M172 140 H182 M172 180 H182 M172 220 H182 M172 260 H182 M156 296 H182 M112 356 H182" stroke-width="1.5"/>
+</g>
+<circle cx="105" cy="346" r="3.5" fill="#222220"/><circle cx="105" cy="362" r="3.5" fill="#222220"/>
+<g ${T}><text x="186" y="75">Agua sucia</text><text x="186" y="123">Tela</text><text x="186" y="145">Grava</text><text x="186" y="185">Arena gruesa</text><text x="186" y="225">Arena fina</text><text x="186" y="265">Carbón</text><text x="186" y="301">Tela</text><text x="186" y="361">Agua filtrada</text></g>
+</svg>`,
+destilador:`<svg viewBox="0 0 320 250" role="img" aria-label="Destilador solar">
+<defs><pattern id="hl" width="8" height="6" patternUnits="userSpaceOnUse"><path d="M0 3 H8" stroke="#222220" stroke-width="1.2"/></pattern></defs>
+<path d="M45 186 H275 L268 220 H52 Z" fill="url(#hl)"/>
+<g stroke="#222220" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="40" cy="32" r="13" stroke-width="2.5"/>
+<path d="M40 10 V4 M40 54 V60 M18 32 H12 M62 32 H68 M24 16 L20 12 M56 48 L60 52 M56 16 L60 12 M24 48 L20 52" stroke-width="2"/>
+<path d="M95 182 q-6 -9 0 -18 q6 -9 0 -18 M89 152 L95 144 L101 152 M225 182 q-6 -9 0 -18 q6 -9 0 -18 M219 152 L225 144 L231 152" stroke-width="1.8"/>
+<path d="M28 104 L52 220 H268 L292 104" stroke-width="2.5"/>
+<rect x="138" y="158" width="44" height="60" fill="#DCDCD5" stroke-width="2.5"/>
+<path d="M14 98 L160 140 L306 98" stroke-width="2.5"/>
+<path d="M168 134 L190 155 M75 214 V228 M160 222 V228" stroke-width="1.5"/>
+</g>
+<rect x="141" y="203" width="38" height="13" fill="#222220"/>
+<circle cx="160" cy="131" r="8" fill="#222220"/><circle cx="160" cy="151" r="3" fill="#222220"/>
+<g ${T}><text x="230" y="92">Plástico</text><text x="194" y="164">Piedra</text><text x="75" y="244" text-anchor="middle">Agua sucia</text><text x="160" y="244" text-anchor="middle">Vaso</text></g>
+</svg>`,
+solar:`<svg viewBox="0 0 300 400" role="img" aria-label="Conexión de sistema solar">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#222220"/></marker></defs>
+<polygon points="50,64 220,34 250,92 80,122" fill="#B9B9B1" stroke="#222220" stroke-width="2.5" stroke-linejoin="round"/>
+<g stroke="#222220" fill="none" stroke-width="1.5"><path d="M106.7 54 L136.7 112 M163.3 44 L193.3 102 M65 93 L235 63"/></g>
+<g stroke="#222220" fill="none" stroke-width="2.5" stroke-linecap="round">
+<path d="M150 154 V184" marker-end="url(#ah)"/>
+<rect x="75" y="190" width="150" height="46" rx="6"/>
+<path d="M150 236 V266" marker-end="url(#ah)"/>
+<rect x="85" y="274" width="130" height="52" rx="4"/>
+<path d="M120 326 L84 352 M180 326 L216 352" marker-end="url(#ah)"/>
+<rect x="20" y="358" width="120" height="36" rx="6"/><rect x="160" y="358" width="120" height="36" rx="6"/>
+<circle cx="172" cy="170" r="9" stroke-width="1.8"/><circle cx="172" cy="252" r="9" stroke-width="1.8"/>
+</g>
+<rect x="144" y="244" width="12" height="14" fill="#DCDCD5" stroke="#222220" stroke-width="2"/>
+<rect x="105" y="266" width="16" height="8" fill="#222220"/><rect x="179" y="266" width="16" height="8" fill="#222220"/>
+<g ${T}>
+<text x="150" y="146" text-anchor="middle" font-weight="700">Panel solar</text>
+<text x="172" y="175" text-anchor="middle" font-size="13" font-weight="700">2</text><text x="186" y="175" font-size="13">Conectar al final</text>
+<text x="150" y="219" text-anchor="middle">Controlador</text>
+<text x="172" y="257" text-anchor="middle" font-size="13" font-weight="700">1</text><text x="186" y="249" font-size="13">Conectar primero</text><text x="186" y="265" font-size="13">con fusible</text>
+<text x="113" y="296" text-anchor="middle" font-weight="700">+</text><text x="187" y="296" text-anchor="middle" font-weight="700">−</text>
+<text x="150" y="317" text-anchor="middle">Batería 12 V</text>
+<text x="80" y="381" text-anchor="middle" font-size="14">USB, celular</text><text x="220" y="381" text-anchor="middle" font-size="14">Inversor 120 V</text>
+</g></svg>`,
+cohete:`<svg viewBox="0 0 300 300" role="img" aria-label="Estufa cohete vista de lado">
+<defs><pattern id="br" width="16" height="8" patternUnits="userSpaceOnUse"><rect width="16" height="8" fill="#B9B9B1"/><path d="M0 0.5 H16 M0 4 H16 M8 0 V4 M0 4 V8" stroke="#222220" stroke-width="1"/></pattern></defs>
+<g stroke="#222220" stroke-width="2">
+<rect x="24" y="254" width="206" height="16" fill="url(#br)"/>
+<rect x="24" y="206" width="126" height="16" fill="url(#br)"/>
+<rect x="150" y="92" width="16" height="130" fill="url(#br)"/>
+<rect x="214" y="92" width="16" height="162" fill="url(#br)"/>
+</g>
+<g stroke="#222220" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M140 86 H240" stroke-width="4"/>
+<path d="M146 46 H234 V80 H146 Z M146 54 h-8 M234 54 h8 M140 46 H240" stroke-width="2.5"/>
+<path d="M2 232 H128 M8 240 H122 M2 247 H116" stroke-width="4"/>
+<path d="M188 250 c-14 -12 -4 -24 2 -36 c2 10 12 14 8 26 c5 -3 7 -8 7 -13 c7 13 0 23 -17 23 z" stroke-width="2"/>
+<path d="M190 204 V110 M183 120 L190 108 L197 120" stroke-width="2"/>
+</g>
+<g ${T} font-size="14"><text x="250" y="68">Olla</text><text x="238" y="160">Chimenea</text><text x="24" y="198">Boca para la leña</text></g>
+</svg>`,
+tienda:`<svg viewBox="0 0 300 240" role="img" aria-label="Refugio de lona en forma de A">
+<g stroke="#222220" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M0 214 H300" stroke-width="2"/>
+<path d="M26 214 V36 M274 214 V36" stroke-width="6"/>
+<path d="M26 70 L10 52 M26 100 L44 82 M274 70 L290 52 M274 100 L256 82" stroke-width="3"/>
+<path d="M26 80 H274" stroke-width="2"/>
+<polygon points="150,80 62,210 238,210" fill="#B9B9B1" stroke-width="2.5"/>
+<path d="M98 207 H202" stroke-width="6"/>
+<path d="M62 210 L54 226 M238 210 L246 226" stroke-width="3"/>
+</g>
+<g ${T}><text x="160" y="70">Cuerda tensa</text><text x="202" y="142">Lona</text><text x="150" y="198" text-anchor="middle" font-size="13">Cartón en el piso</text><text x="150" y="236" text-anchor="middle" font-size="14">Estacas o piedras</text></g>
+</svg>`
+};
+
+FIG.inclinacion = `<svg viewBox="0 0 300 200" role="img" aria-label="Panel inclinado hacia el sur">
+<g stroke="#222220" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M10 170 H290" stroke-width="2"/>
+<path d="M90 170 L220 95" stroke-width="9"/>
+<path d="M220 95 V170 M200 106 V170" stroke-width="3"/>
+<path d="M135 170 A45 45 0 0 0 129 147.5" stroke-width="2"/>
+<circle cx="50" cy="42" r="13" stroke-width="2.5"/>
+<path d="M50 20 V14 M50 64 V70 M28 42 H22 M72 42 H78 M34 26 L30 22 M66 58 L70 62 M66 26 L70 22 M34 58 L30 62" stroke-width="2"/>
+<path d="M82 62 L125 110 M117 108 L126 111 L124 101" stroke-width="2"/>
+<path d="M60 190 H20 M28 184 L20 190 L28 196" stroke-width="2"/>
+</g>
+<g fill="#222220" font-size="15"><text x="112" y="192">Ángulo = latitud</text><text x="66" y="195" font-weight="700">Sur</text><text x="232" y="112">Panel</text></g>
+</svg>`;
+
+/* ---------- Mapa de ejemplo ---------- */
+const ICON = {
+  h:(x,y)=>`<g transform="translate(${x},${y})"><rect x="-12" y="-12" width="24" height="24" fill="#222220"/><path d="M0 -7 V7 M-7 0 H7" stroke="#DCDCD5" stroke-width="4"/></g>`,
+  a:(x,y)=>`<g transform="translate(${x},${y})"><path d="M-13 1 L0 -12 L13 1 V12 H-13 Z" fill="#DCDCD5" stroke="#222220" stroke-width="3" stroke-linejoin="round"/><rect x="-4" y="3" width="8" height="9" fill="#222220"/></g>`,
+  r:(x,y)=>`<g transform="translate(${x},${y})"><circle r="12" fill="#DCDCD5" stroke="#222220" stroke-width="3"/><circle r="5" fill="#222220"/></g>`
+};
+const legIcon = k => `<svg width="22" height="22" viewBox="-15 -15 30 30" aria-hidden="true">${ICON[k](0,0)}</svg>`;
+function mapSVG(layer, zoom){
+  const z = [1,1.7,2.6][zoom];
+  let grid = '';
+  for(let x=0; x<=800; x+=50) grid += `M${x} 0 V420 `;
+  for(let y=0; y<=420; y+=50) grid += `M0 ${y} H800 `;
+  const H = [[360,215],[612,300]], A = [[170,330],[470,150],[690,205]], R = [[250,180]];
+  let pins = '';
+  if(layer !== 2) pins += H.map(p => ICON.h(...p)).join('');
+  if(layer !== 1) pins += A.map(p => ICON.a(...p)).join('');
+  if(layer === 0) pins += R.map(p => ICON.r(...p)).join('');
+  const river = 'M-20 70 C150 25 260 115 400 72 S650 30 820 85';
+  return `<svg viewBox="0 0 800 420" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mapa de ejemplo"><g transform="translate(400 210) scale(${z}) translate(-400 -210)">
+<path d="${grid}" stroke="#9A9A93" stroke-width="1"/>
+<path d="${river}" fill="none" stroke="#222220" stroke-width="30"/>
+<path d="${river}" fill="none" stroke="#B9B9B1" stroke-width="24"/>
+<path d="M0 255 H800 M300 420 V95 M60 420 L520 95 M540 420 L720 110" fill="none" stroke="#222220" stroke-width="6"/>
+<g fill="#222220" font-weight="700"><text x="455" y="108" font-size="18">Río</text><text x="10" y="245" font-size="15">Salida</text><text x="310" y="410" font-size="15">Salida</text></g>
+${pins}
+</g></svg>`;
+}
+
+/* ---------- App para celular ---------- */
+const view = document.getElementById('view');
+const backBtn = document.getElementById('back');
+const md = s => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\*/g,'').toLowerCase();
+const secOf = code => SECS.find(s => s.code === code);
+const secOfNode = id => SECS.find(s => s.start[0] === id[0]);
+const CHEV = '<svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5 L16 12 L9 19"/></svg>';
+const fichaHref = id => F[id].plan ? '#plan' : F[id].mochila ? '#mochila' : F[id].map ? '#mapa' : '#ficha-' + id.toLowerCase();
+
+let query = '';
+let mapZoom = 0;
+
+/* Índice de búsqueda */
+const INDEX = Object.keys(F).map(id => ({
+  id, text: norm(F[id].t + ' ' + secOf(id[0]).name + ' ' + F[id].b.map(b => b.slice(1).join(' ')).join(' ')),
+  title: norm(F[id].t)
+}));
+
+function hrefFor(target, fromNode){
+  if(target === 'menu') return '#sec-' + secOfNode(fromNode).code.toLowerCase();
+  if(target.startsWith('m:')) return '#mapa-' + target.slice(2);
+  if(target.startsWith('f:')) return fichaHref(target.slice(2));
+  return '#preg-' + target;
+}
+
+/* Vistas */
+function homeView(){
+  view.innerHTML = `
+    <label class="search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 L21 21"/></svg>
+      <input id="q" type="search" placeholder="Buscar: agua, quemadura, SOS…" autocomplete="off" aria-label="Buscar en el recetario" value="${esc(query)}"></label>
+    <div id="res"></div>`;
+  const input = document.getElementById('q');
+  input.addEventListener('input', () => { query = input.value; homeResults(); });
+  homeResults();
+}
+
+function homeResults(){
+  const res = document.getElementById('res');
+  const q = norm(query.trim());
+  if(!q){
+    res.innerHTML = `<div class="list" style="margin-bottom:12px"><a class="row" href="#plan"><span class="tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="7" r="3.2"/><circle cx="16.5" cy="8" r="2.6"/><path d="M2 20c0-3.6 2.7-6 6-6s6 2.4 6 6z"/><path d="M13.5 20c.2-2 .9-3.6 2.1-4.6.3 0 .6-.1.9-.1 2.9 0 5.5 2 5.5 4.7z"/></svg></span>
+        <span class="rt"><span class="rn">Mi plan familiar</span><span class="rd">Punto de reunión, contactos y datos médicos</span></span>${CHEV}</a>
+        <a class="row" href="#mochila"><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M8 7V5a4 4 0 0 1 8 0v2"/><rect x="4" y="7" width="16" height="14" rx="3"/><path d="M8 13h8"/></svg></span>
+        <span class="rt"><span class="rn">Mi mochila</span><span class="rd">Lista para marcar y revisar cada 6 meses</span></span>${CHEV}</a></div>
+      <div class="list">${SECS.map(s => `
+      <a class="row" href="#sec-${s.code.toLowerCase()}"><span class="tile">${s.code}</span>
+        <span class="rt"><span class="rn">${s.name}</span><span class="rd">${s.desc}</span></span>${CHEV}</a>`).join('')}</div>
+      <p class="credit">Desarrollado por DRAGUSTINOVIS Labs</p>`;
+    return;
+  }
+  const words = q.split(/\s+/);
+  const hits = INDEX.filter(it => words.every(w => it.text.includes(w)))
+    .sort((a,b) => (words.some(w => b.title.includes(w)) ? 1 : 0) - (words.some(w => a.title.includes(w)) ? 1 : 0));
+  if(!hits.length){
+    res.innerHTML = `<div class="empty">No hay fichas con “${esc(query.trim())}”. Prueba con una sola palabra, como “agua” o “herida”.</div>`;
+    return;
+  }
+  res.innerHTML = `<div class="list">${hits.map(h => `
+    <a class="row" href="${fichaHref(h.id)}"><span class="chip">${h.id}</span>
+      <span class="rt"><span class="rn">${F[h.id].t}</span><span class="rd">${secOf(h.id[0]).name}</span></span>${CHEV}</a>`).join('')}</div>`;
+}
+
+function secView(code){
+  const s = secOf(code);
+  if(!s) return homeView();
+  view.innerHTML = `
+    <div class="shead"><span class="tile">${s.code}</span><h1>${s.name}</h1></div>
+    <div class="rule"><strong>Regla de oro:</strong> ${s.rule}</div>
+    <a class="assist" href="#preg-${s.start}"><span class="qmark">?</span>
+      <span class="rt"><span class="rn">Asistente de preguntas</span><span>Contesta y te llevo a la ficha correcta</span></span>${CHEV}</a>
+    <h2>Fichas</h2>
+    <div class="list">${s.fichas.map(id => `
+      <a class="row" href="${fichaHref(id)}"><span class="chip">${id}</span>
+        <span class="rt"><span class="rn">${F[id].t}</span></span>${CHEV}</a>`).join('')}</div>`;
+}
+
+function qView(id){
+  const node = N[id];
+  if(!node) return homeView();
+  const s = secOfNode(id);
+  view.innerHTML = `
+    <p class="crumb">Asistente de ${s.name.toLowerCase()}</p>
+    <h1 class="qt">${node.text}</h1>
+    <div class="opts">${node.o.map(o => `<a class="opt" href="${hrefFor(o[1], id)}" style="text-decoration:none">${o[0]}${CHEV}</a>`).join('')}</div>`;
+}
+
+function fichaBody(id){
+  const f = F[id]; const out = []; let list = null; let figDone = false; let liN = 0;
+  const fig = () => { if(f.fig && !figDone){ out.push(`<figure class="fig">${FIG[f.fig]}</figure>`); figDone = true; } };
+  const close = () => { if(list){ out.push(list === 'ol' ? '</ol>' : '</ul>'); list = null; } };
+  for(const [t,a,b] of f.b){
+    if(t === 'step'){ if(list !== 'ol'){ close(); out.push('<ol class="steps">'); list = 'ol'; } out.push(`<li><span>${md(a)}</span></li>`); continue; }
+    if(t === 'li'){ if(list !== 'ul'){ close(); out.push(f.check ? '<ul class="bul ckl">' : '<ul class="bul">'); list = 'ul'; } const k = liN++; out.push(f.check ? `<li><label><input type="checkbox" data-k="${k}"${MO.c.includes(k) ? ' checked' : ''}><span>${md(a)}</span></label></li>` : `<li>${md(a)}</li>`); continue; }
+    close();
+    if(t === 'need'){ out.push(`<div class="need"><strong>Necesitas</strong><p>${md(a)}</p></div>`); fig(); }
+    else if(t === 'note') out.push(`<div class="note"><strong>Ojo:</strong> ${md(a)}</div>`);
+    else if(t === 'lab') out.push(`<p><strong>${a}:</strong> ${md(b)}</p>`);
+    else if(t === 'h') out.push(`<h2>${a}</h2>`);
+    else out.push(`<p>${md(a)}</p>`);
+  }
+  close();
+  if(f.fig && !figDone) out.unshift(`<figure class="fig">${FIG[f.fig]}</figure>`);
+  return out.join('');
+}
+
+function fichaView(id){
+  const f = F[id];
+  if(!f) return homeView();
+  const s = secOf(id[0]);
+  view.innerHTML = `
+    <div class="fmeta"><span class="chip">${id}</span><a href="#sec-${s.code.toLowerCase()}">${s.name}</a></div>
+    <h1>${f.t}</h1>
+    ${fichaBody(id)}${f.check ? '<div id="rev"></div>' : ''}`;
+  if(f.check) setupCheck();
+}
+
+function mapView(layer){
+  const names = ['Todo','Hospitales','Albergues'];
+  view.innerHTML = `
+    <div class="fmeta"><span class="chip">M1</span><a href="#sec-m">Mapas</a></div>
+    <h1>Mapa de Matamoros</h1>
+    <p class="warn">Ejemplo de cómo se verá: las calles no son reales</p>
+    <div class="mapbox" id="mapbox"></div>
+    <div class="mctl">
+      <div class="seg" role="group" aria-label="Qué mostrar">${names.map((n,i) => `<button data-l="${i}" aria-pressed="${i===layer}">${n}</button>`).join('')}</div>
+      <div class="zoom"><button id="zOut" aria-label="Alejar">−</button><button id="zIn" aria-label="Acercar">+</button></div>
+    </div>
+    <div class="leg"><span>${legIcon('h')}Hospital</span><span>${legIcon('a')}Albergue</span><span>${legIcon('r')}Punto de reunión</span></div>
+    <div class="list"><a class="row" href="#ficha-m2"><span class="chip">M2</span><span class="rt"><span class="rn">Anotar mis puntos de reunión</span></span>${CHEV}</a></div>`;
+  const draw = () => {
+    document.getElementById('mapbox').innerHTML = mapSVG(layer, mapZoom).replace('slice','meet');
+    document.getElementById('zOut').disabled = mapZoom === 0;
+    document.getElementById('zIn').disabled = mapZoom === 2;
+  };
+  view.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    layer = +b.dataset.l;
+    view.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    draw();
+  }));
+  document.getElementById('zIn').addEventListener('click', () => { if(mapZoom < 2){ mapZoom++; draw(); } });
+  document.getElementById('zOut').addEventListener('click', () => { if(mapZoom > 0){ mapZoom--; draw(); } });
+  draw();
+}
+
+/* Guardado en el teléfono */
+const loadStore = (k, def) => { try{ const v = localStorage.getItem(k); return v ? Object.assign(def, JSON.parse(v)) : def; }catch(e){ return def; } };
+const saveStore = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } };
+let MO = loadStore('mochila-v1', {c:[], r:'', x:[]});
+let PLAN = loadStore('plan-v1', {l:{}, t:{}, p:[]});
+
+/* Lista de la mochila */
+function setupCheck(){
+  view.querySelectorAll('.ckl input').forEach(cb => cb.addEventListener('change', () => {
+    const k = +cb.dataset.k;
+    MO.c = MO.c.filter(x => x !== k);
+    if(cb.checked) MO.c.push(k);
+    saveStore('mochila-v1', MO);
+  }));
+  drawRev();
+}
+function drawRev(){
+  const el = document.getElementById('rev');
+  if(!el) return;
+  let txt = 'Aún no la marcas como revisada.', old = false;
+  if(MO.r){
+    const d = new Date(MO.r + 'T12:00:00');
+    old = (Date.now() - d) / 864e5 > 182;
+    txt = 'Revisada el ' + d.toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) + '.' + (old ? ' Ya pasaron más de 6 meses: revísala.' : '');
+  }
+  el.innerHTML = `<div class="${old ? 'note' : 'need'}"><p class="revt">${txt}</p></div><button class="big alt" id="revBtn">Marcar revisada hoy</button>`;
+  document.getElementById('revBtn').addEventListener('click', () => {
+    const t = new Date(), p = n => String(n).padStart(2, '0');
+    MO.r = `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}`;
+    saveStore('mochila-v1', MO);
+    drawRev();
+  });
+}
+
+/* Mi mochila */
+function mochilaView(){
+  const base = F.R3.b.filter(b => b[0] === 'li').map(b => b[1]);
+  const note = F.R3.b.find(b => b[0] === 'note');
+  if(!Array.isArray(MO.x)) MO.x = [];
+  const xs = MO.x;
+  view.innerHTML = `<div id="mow">
+    <h1>Mi mochila de emergencia</h1>
+    <p class="crumb">Se guarda solo en este teléfono. Una mochila por persona, cerca de la puerta.</p>
+    <p class="revt" id="moCount"></p>
+    <h2>Lo básico</h2>
+    <ul class="ckl">${base.map((t, k) => `<li><label><input type="checkbox" data-k="${k}"${MO.c.includes(k) ? ' checked' : ''}><span>${md(t)}</span></label></li>`).join('')}</ul>
+    <h2>Lo mío</h2>
+    ${xs.length ? `<ul class="ckl">${xs.map((it, i) => `<li class="xi"><label><input type="checkbox" data-x="${i}"${it.c ? ' checked' : ''}><span>${esc(it.t)}</span></label><button class="del" data-del="${i}">Quitar</button></li>`).join('')}</ul>` : '<div class="empty">Agrega lo que tu familia necesita: leche para bebé, lentes, cargador, cosas de tu mascota…</div>'}
+    <div class="addrow"><input id="newItem" placeholder="Agregar algo más" autocomplete="off" aria-label="Agregar algo más"><button id="addItem">Agregar</button></div>
+    <div id="rev"></div>
+    ${note ? `<div class="note"><strong>Ojo:</strong> ${md(note[1])}</div>` : ''}</div>`;
+  const w = document.getElementById('mow');
+  const count = () => {
+    const done = MO.c.filter(k => k < base.length).length + xs.filter(x => x.c).length;
+    document.getElementById('moCount').textContent = `Llevas ${done} de ${base.length + xs.length}.`;
+  };
+  w.addEventListener('change', e => {
+    const t = e.target;
+    if(t.dataset.k !== undefined){ const k = +t.dataset.k; MO.c = MO.c.filter(x => x !== k); if(t.checked) MO.c.push(k); }
+    else if(t.dataset.x !== undefined){ xs[+t.dataset.x].c = t.checked; }
+    else return;
+    saveStore('mochila-v1', MO); count();
+  });
+  w.addEventListener('click', e => {
+    const d = e.target.closest('[data-del]');
+    if(d){ xs.splice(+d.dataset.del, 1); saveStore('mochila-v1', MO); mochilaView(); }
+  });
+  const add = () => {
+    const v = document.getElementById('newItem').value.trim();
+    if(!v) return;
+    xs.push({t:v, c:false}); saveStore('mochila-v1', MO);
+    mochilaView(); document.getElementById('newItem').focus();
+  };
+  document.getElementById('addItem').addEventListener('click', add);
+  document.getElementById('newItem').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); add(); } });
+  count(); drawRev();
+}
+
+/* Plan familiar */
+const PLAN_L = [['reunion','Punto de reunión familiar'],['reunion2','Si no se puede llegar ahí'],['albergue','Albergue más cercano'],['hospital','Hospital más cercano'],['ruta','Ruta para salir de la ciudad']];
+const PLAN_T = [['pc','Protección Civil de tu municipio'],['fuera','Familiar fuera de tu ciudad (nombre y teléfono)']];
+const PLAN_P = [['nombre','Nombre'],['tel','Teléfono'],['sangre','Tipo de sangre'],['alergias','Alergias'],['medicinas','Medicinas'],['enfermedades','Enfermedades']];
+const SANGRE = ['','O+','O−','A+','A−','B+','B−','AB+','AB−','No sé'];
+
+function planView(focusLast){
+  const fld = (g, k, label, val) => `<label class="fld"><span>${label}</span><input data-g="${g}" data-k="${k}" value="${esc(val || '')}" autocomplete="off"></label>`;
+  const person = (p, i) => `<div class="pcard"><div class="phead"><strong>Persona ${i + 1}</strong><button class="del" data-del="${i}">Quitar</button></div>
+    ${PLAN_P.map(([k, l]) => k === 'sangre'
+      ? `<label class="fld"><span>${l}</span><select data-p="${i}" data-k="sangre">${SANGRE.map(s => `<option value="${s}"${(p.sangre || '') === s ? ' selected' : ''}>${s || 'Elegir'}</option>`).join('')}</select></label>`
+      : `<label class="fld"><span>${l}</span><input data-p="${i}" data-k="${k}" value="${esc(p[k] || '')}" autocomplete="off"${k === 'tel' ? ' inputmode="tel"' : ''}></label>`).join('')}</div>`;
+  view.innerHTML = `<div id="planw">
+    <h1>Mi plan familiar</h1>
+    <p class="crumb">Se guarda solo en este teléfono. Llénalo con tu familia.</p>
+    <h2>Lugares</h2>${PLAN_L.map(([k, l]) => fld('l', k, l, PLAN.l[k])).join('')}
+    <h2>Teléfonos</h2>${PLAN_T.map(([k, l]) => fld('t', k, l, PLAN.t[k])).join('')}
+    <h2>Personas</h2>${PLAN.p.length ? PLAN.p.map(person).join('') : '<div class="empty">Agrega a cada persona de tu familia con sus datos médicos. En una emergencia le sirven a quien los atienda.</div>'}
+    <button class="big alt" id="addP">Agregar persona</button>
+    <p class="status" id="planSt" role="status"></p></div>`;
+  const w = document.getElementById('planw'), st = document.getElementById('planSt');
+  const store = () => { st.textContent = saveStore('plan-v1', PLAN) ? 'Guardado en este teléfono.' : 'No se pudo guardar en este teléfono.'; };
+  const onEdit = e => {
+    const t = e.target;
+    if(t.dataset.g) PLAN[t.dataset.g][t.dataset.k] = t.value;
+    else if(t.dataset.p !== undefined) PLAN.p[+t.dataset.p][t.dataset.k] = t.value;
+    else return;
+    store();
+  };
+  w.addEventListener('input', onEdit);
+  w.addEventListener('change', onEdit);
+  w.addEventListener('click', e => {
+    const d = e.target.closest('[data-del]');
+    if(d){ PLAN.p.splice(+d.dataset.del, 1); store(); planView(); }
+  });
+  document.getElementById('addP').addEventListener('click', () => { PLAN.p.push({}); store(); planView(true); });
+  if(focusLast){
+    const cards = w.querySelectorAll('.pcard');
+    const last = cards[cards.length - 1];
+    if(last){ last.scrollIntoView({block:'start'}); last.querySelector('input').focus(); }
+  }
+}
+
+/* Silbato */
+function startWhistle(){
+  const st = document.getElementById('sosStatus');
+  let ctx;
+  try{ ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+  catch(e){ st.textContent = 'Este teléfono no permite el sonido aquí.'; return; }
+  const osc = ctx.createOscillator(), g = ctx.createGain();
+  osc.type = 'square'; osc.frequency.value = 3150; g.gain.value = 0;
+  osc.connect(g); g.connect(ctx.destination); osc.start();
+  if(ctx.resume) ctx.resume();
+  const el = document.createElement('div');
+  el.className = 'sig';
+  el.innerHTML = '<span>Silbato sonando</span><small>Sube el volumen al máximo. En iPhone, quita el modo silencio. Toca para detener.</small>';
+  document.body.appendChild(el);
+  el.addEventListener('click', stopSignal);
+  const me = {el, timer:null, track:null, wake:null, torchFailed:false, ctx};
+  sig = me;
+  if(navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { me.wake = w; }).catch(() => {});
+  const seq = [[1,1000],[0,400],[1,1000],[0,400],[1,1000],[0,2000]];
+  let i = 0;
+  const step = () => {
+    if(sig !== me) return;
+    const [on, ms] = seq[i];
+    g.gain.setValueAtTime(on ? 0.8 : 0, ctx.currentTime);
+    i = (i + 1) % seq.length;
+    me.timer = setTimeout(step, ms);
+  };
+  step();
+}
+
+/* Señal SOS con pantalla y linterna */
+let sig = null;
+const sosLink = document.getElementById('sosLink');
+
+function sosView(){
+  view.innerHTML = `
+    <h1>Señal SOS</h1>
+    <p>Tres cortos, tres largos, tres cortos. Apunta la pantalla o la linterna hacia donde puedan verte: aviones, barcos o rescatistas.</p>
+    <div class="morse" aria-label="S O S">· · · &nbsp;— — —&nbsp; · · ·</div>
+    <label class="tog"><span>Pantalla</span><input type="checkbox" id="useScreen" checked></label>
+    <label class="tog"><span>Linterna del teléfono</span><input type="checkbox" id="useTorch" checked></label>
+    <button class="big" id="startSos">Enviar SOS</button>
+    <button class="big alt" id="startLamp">Luz fija</button>
+    <button class="big alt" id="startWhistle">Silbato</button>
+    <p class="status" id="sosStatus" role="status"></p>
+    <div class="note"><strong>Ojo:</strong> la señal gasta batería rápido. Úsala cuando haya alguien que pueda verte; de noche se ve mucho más lejos.</div>`;
+  document.getElementById('startSos').addEventListener('click', () => startSignal('sos'));
+  document.getElementById('startLamp').addEventListener('click', () => startSignal('lamp'));
+  document.getElementById('startWhistle').addEventListener('click', () => startSignal('whistle'));
+}
+
+async function getTorch(){
+  try{
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return null;
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});
+    const track = stream.getVideoTracks()[0];
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    if(!caps.torch){ track.stop(); return null; }
+    return track;
+  }catch(e){ return null; }
+}
+
+function stopSignal(){
+  if(!sig) return;
+  const s = sig; sig = null;
+  clearTimeout(s.timer);
+  if(s.track){ s.track.applyConstraints({advanced:[{torch:false}]}).catch(() => {}).finally(() => s.track.stop()); }
+  if(s.wake){ s.wake.release().catch(() => {}); }
+  if(s.ctx){ s.ctx.close().catch(() => {}); }
+  s.el.remove();
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  const st = document.getElementById('sosStatus');
+  if(st && s.torchFailed) st.textContent = 'La linterna no se pudo usar aquí: en iPhone no está disponible y en Android funciona con la app instalada. La pantalla sí funciona.';
+}
+
+async function startSignal(mode){
+  stopSignal();
+  if(mode === 'whistle') return startWhistle();
+  const useScreen = document.getElementById('useScreen').checked;
+  const useTorch = document.getElementById('useTorch').checked;
+  const st = document.getElementById('sosStatus');
+  if(!useScreen && !useTorch){ st.textContent = 'Activa la pantalla, la linterna o las dos.'; return; }
+  st.textContent = '';
+  const el = document.createElement('div');
+  el.className = 'sig';
+  el.innerHTML = `<span>${mode === 'sos' ? 'Enviando SOS' : 'Luz encendida'}</span><small>Toca para detener</small>`;
+  document.body.appendChild(el);
+  el.addEventListener('click', stopSignal);
+  const me = {el, timer:null, track:null, wake:null, torchFailed:false};
+  sig = me;
+  try{ if(navigator.wakeLock) me.wake = await navigator.wakeLock.request('screen'); }catch(e){}
+  try{ if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); }catch(e){}
+  if(useTorch){
+    const t = await getTorch();
+    if(sig !== me){ if(t) t.stop(); return; }
+    if(t) me.track = t; else { me.torchFailed = true; el.querySelector('small').textContent = 'Linterna no disponible aquí. Toca para detener'; }
+  }
+  if(sig !== me) return;
+  const set = on => {
+    if(useScreen) el.classList.toggle('on', on);
+    if(me.track) me.track.applyConstraints({advanced:[{torch:on}]}).catch(() => {});
+  };
+  if(mode === 'lamp'){ set(true); return; }
+  const U = 300, seq = [];
+  const letter = units => units.forEach((u, i) => { seq.push([true, u]); seq.push([false, i < units.length - 1 ? 1 : 3]); });
+  letter([1,1,1]); letter([3,3,3]); letter([1,1,1]);
+  seq[seq.length - 1][1] = 7;
+  let i = 0;
+  const step = () => {
+    if(sig !== me) return;
+    const [on, u] = seq[i];
+    set(on);
+    i = (i + 1) % seq.length;
+    me.timer = setTimeout(step, u * U);
+  };
+  step();
+}
+
+/* Navegación con el botón de regresar del teléfono */
+let trail = [location.hash];
+function parentOf(h){
+  if(h.startsWith('#ficha-')) return '#sec-' + h[7];
+  if(h.startsWith('#preg-')) return '#sec-' + secOfNode(h.slice(6)).code.toLowerCase();
+  if(h === '#sos' || h === '#plan' || h === '#mochila') return '#';
+  if(h.startsWith('#mapa')) return '#sec-m';
+  return '#';
+}
+function route(){
+  stopSignal();
+  const h = location.hash;
+  if(h === '#sos') sosLink.setAttribute('aria-current', 'page'); else sosLink.removeAttribute('aria-current');
+  if(trail.length > 1 && trail[trail.length-2] === h) trail.pop();
+  else if(trail[trail.length-1] !== h) trail.push(h);
+  backBtn.hidden = !h || h === '#';
+  if(h.startsWith('#sec-')) secView(h.slice(5).toUpperCase());
+  else if(h.startsWith('#preg-')) qView(h.slice(6));
+  else if(h.startsWith('#ficha-')) fichaView(h.slice(7).toUpperCase());
+  else if(h === '#sos') sosView();
+  else if(h === '#plan') planView();
+  else if(h === '#mochila') mochilaView();
+  else if(h.startsWith('#mapa')) { mapZoom = 0; mapView(h === '#mapa' ? 0 : +h.slice(6) || 0); }
+  else homeView();
+  window.scrollTo(0, 0);
+}
+backBtn.addEventListener('click', () => {
+  if(trail.length > 1) history.back();
+  else location.hash = parentOf(location.hash);
+});
+window.addEventListener('hashchange', route);
+route();
+
+/* Pantalla de inicio */
+const splash = document.getElementById('splash');
+const hideSplash = () => { splash.classList.add('out'); setTimeout(() => splash.remove(), 400); };
+splash.addEventListener('click', hideSplash);
+setTimeout(hideSplash, 1800);
+
+/* Funcionar sin internet */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+}
+</script>
+</body>
+</html>
